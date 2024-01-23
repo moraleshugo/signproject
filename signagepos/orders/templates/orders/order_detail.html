@@ -1,0 +1,1004 @@
+{% extends 'base_template.html' %}
+
+{% block pagetitle %}Project Details{% endblock %}
+{% block pagebreadcrum %}<a href="{% url 'orders:order_list' %}">Order List /</a>   Order # {{ order.order_number}}{% endblock %}
+
+{% block style %}
+<style>
+.white-bg {
+    background-color: #ffffff;
+}
+.page-heading {
+    border-top: 0;
+    padding: 0 10px 20px 10px;
+}
+
+.forum-post-container .media {
+  margin: 10px 10px 10px 10px;
+  padding: 20px 10px 20px 10px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.forum-avatar {
+  float: left;
+  margin-right: 20px;
+  text-align: center;
+  width: 110px;
+}
+.forum-avatar .img-circle {
+  height: 48px;
+  width: 48px;
+}
+.author-info {
+  color: #676a6c;
+  font-size: 11px;
+  margin-top: 5px;
+  text-align: center;
+}
+.forum-post-info {
+  padding: 9px 12px 6px 12px;
+  background: #f9f9f9;
+  border: 1px solid #f1f1f1;
+}
+.media-body > .media {
+  background: #f9f9f9;
+  border-radius: 3px;
+  border: 1px solid #f1f1f1;
+}
+.forum-post-container .media-body .photos {
+  margin: 10px 0;
+}
+.forum-photo {
+  max-width: 140px;
+  border-radius: 3px;
+}
+.media-body > .media .forum-avatar {
+  width: 70px;
+  margin-right: 10px;
+}
+.media-body > .media .forum-avatar .img-circle {
+  height: 38px;
+  width: 38px;
+}
+.mid-icon {
+  font-size: 66px;
+}
+.forum-item {
+  margin: 10px 0;
+  padding: 10px 0 20px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.views-number {
+  font-size: 24px;
+  line-height: 18px;
+  font-weight: 400;
+}
+.forum-container,
+.forum-post-container {
+  padding: 30px !important;
+}
+.forum-item small {
+  color: #999;
+}
+.forum-item .forum-sub-title {
+  color: #999;
+  margin-left: 50px;
+}
+.forum-title {
+  margin: 15px 0 15px 0;
+}
+.forum-info {
+  text-align: center;
+}
+.forum-desc {
+  color: #999;
+}
+.forum-icon {
+  float: left;
+  width: 30px;
+  margin-right: 20px;
+  text-align: center;
+}
+a.forum-item-title {
+  color: inherit;
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+}
+a.forum-item-title:hover {
+  color: inherit;
+}
+.forum-icon .fa {
+  font-size: 30px;
+  margin-top: 8px;
+  color: #9b9b9b;
+}
+.forum-item.active .fa {
+  color: #1ab394;
+}
+.forum-item.active a.forum-item-title {
+  color: #1ab394;
+}
+@media (max-width: 992px) {
+  .forum-info {
+    margin: 15px 0 10px 0;
+    /* Comment this is you want to show forum info in small devices */
+    display: none;
+  }
+  .forum-desc {
+    float: none !important;
+  }
+}
+
+
+
+
+
+.ibox {
+  clear: both;
+  margin-bottom: 25px;
+  margin-top: 0;
+  padding: 0;
+}
+.ibox.collapsed .ibox-content {
+  display: none;
+}
+.ibox.collapsed .fa.fa-chevron-up:before {
+  content: "\f078";
+}
+.ibox.collapsed .fa.fa-chevron-down:before {
+  content: "\f077";
+}
+.ibox:after,
+.ibox:before {
+  display: table;
+}
+.ibox-title {
+  -moz-border-bottom-colors: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  background-color: #ffffff;
+  border-color: #e7eaec;
+  border-image: none;
+  border-style: solid solid none;
+  border-width: 3px 0 0;
+  color: inherit;
+  margin-bottom: 0;
+  padding: 14px 15px 7px;
+  min-height: 48px;
+}
+.ibox-content {
+  background-color: #ffffff;
+  color: inherit;
+  padding: 15px 20px 20px 20px;
+  border-color: #e7eaec;
+  border-image: none;
+  border-style: solid solid none;
+  border-width: 1px 0;
+}
+.ibox-footer {
+  color: inherit;
+  border-top: 1px solid #e7eaec;
+  font-size: 90%;
+  background: #ffffff;
+  padding: 10px 15px;
+}
+
+.message-input {
+    height: 90px !important;
+}
+.form-control, .single-line {
+    background-color: #FFFFFF;
+    background-image: none;
+    border: 1px solid #e5e6e7;
+    border-radius: 1px;
+    color: inherit;
+    display: block;
+    padding: 6px 12px;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    width: 100%;
+    font-size: 14px;
+}
+.text-navy {
+    color: #1ab394;
+}
+.mid-icon {
+    font-size: 66px !important;
+}
+.m-b-sm {
+    margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .progress {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+        height: 3rem;
+    }
+
+    .step {
+        flex: 2;
+        text-align: center;
+    }
+
+    .circle {
+        width: 20px;
+        height: 20px; 
+        border-radius: 50%;
+        background-color: #ddd;
+        border: 2px solid #ddd;
+        display: inline-block;
+    }
+
+    .line {
+        flex: 2;
+        height: 2px;
+        width: 20%;
+        background-color: #ececec;
+        display: inline-block;
+    }
+
+    .active .circle {
+        background-color: #007bff;
+        /* Change this to your desired active color */
+        border-color: #007bff;
+    }
+
+    .active .line {
+        background-color: #007bff;
+    }
+
+    .step-label {
+        margin-top: 10px;
+        /* Adjust the value as needed */
+    }
+
+
+    .checkmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+
+
+
+.btn-upload {
+  padding: 10px 20px;
+  margin-left: 10px;
+}
+.upload-input-group {
+    margin-bottom: 10px;
+}
+
+.input-group>.custom-select:not(:last-child), .input-group>.form-control:not(:last-child) {
+  height: 45px;
+}
+
+</style>
+{% endblock %}
+{% block content %}
+<div class="container mt-3">
+    {% if messages %}
+    {% for message in messages %}
+    <div id="myAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+<section class="content">
+
+    
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- Content for the single column -->
+                <div class="card mb-4">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush rounded-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                <p class="mb-0"><strong>Order Date:</strong> {{order.created_on|date:"M j, Y"}}</p>
+                                
+                                
+                                <div>
+                                    
+                                    <a href="{% url 'orders:edit_order' order.order_number %}" class="btn btn-primary">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="row">
+            <div class="col-lg-6">
+                
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <p class="mb-0"><strong>Warranty Expires</strong> 
+                            {% if order.warranty_end_date %}
+                                {% if order.warranty_end_date < now %}
+                                    <p>Warranty Expired</p>
+                                {% else %}
+                                    <p>{{ order.warranty_end_date }}</p>
+                                {% endif %}
+                            {% else %}
+                                <p>No Expire Date</p>
+                            {% endif %}</p>
+                        <h5 class="my-3"><strong>{{ order.customer.first_name|capfirst }} {{ order.customer.last_name|capfirst}}</strong></h5>
+                        <p class="text-muted mb-1">{% if order.is_business %}
+                            Business Customer
+                            {% else %}
+
+                            {% endif %}</p>
+                        <p class="text-muted mb-1">Order Number: {{ order.order_number }}</p>
+                        <p class="text-muted mb-4">{{ order.shipping_address|capfirst }}, {{ order.city|capfirst }}, {{order.state|capfirst }}</p>
+                        <div class="d-flex justify-content-center mb-1">
+                            {% if is_admin %}
+                            {% if order.process_status != 'done' %}
+                            <form method="post" action="{% url 'orders:complete_order' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_number" value="{{ order.order_number }}">
+                                <button type="submit" class="btn btn-success mx-1">Complete</button>
+                            </form>
+                            
+                            {% endif %}
+                            
+                            <button type="button" class="btn btn-success mx-1" data-toggle="modal" data-target="#uploadMockupModal">Upload Mockups</button>
+
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    
+                        
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="progress">
+                                <div class="step {% if order.process_status == 'new' or order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done' %}active{% endif %}">
+                                    <div class="circle">
+                                        {% if order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done' %}
+                                            <i class="fas fa-check fa-md checkmark" style="color: white; "></i>
+                                        {% endif %}
+                                    </div>
+                                    <p class="step-label" {% if order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done'%}style="color: blue; "{% endif %}>Placed</p>
+                                </div>
+                                <div class="line" {% if order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done' %}style="background-color: blue"{% endif %}></div>
+
+                                <div class="step {% if order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done' %}active{% endif %}">
+                                    <div class="circle">
+                                        {% if order.process_status == 'done' %}
+                                            <i class="fas fa-check fa-md checkmark" style="color: white;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <p class="step-label" {% if order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done'  %}style="color: blue"{% endif %}>Progress</p>
+                                </div>
+                                <div class="line" {% if order.process_status == 'done' %}style="background-color: blue"{% endif %}></div>
+                                <div class="step {% if order.process_status == 'done' %}active{% endif %}">
+                                    <div class="circle">
+                                        {% if order.process_status == 'done' %}
+                                            <i class="fas fa-check fa-md checkmark" style="color: white;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <p class="step-label" {% if order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done'  %}style="color: blue"{% endif %}>Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p class="mb-4"><strong>Project Image Files</strong></p>
+
+                        {% if non_mockup_images %}
+                            <ul class="list-group mx-auto">
+                                {% for image in non_mockup_images %}
+                                    
+                                    
+                                    
+                                        <li class="list-group-item">
+                                            {% if image.order_images %}
+                                                                        <img src="{{ image.order_images.url }}" alt="{{ image.original_file_name }}"
+                                                                            class="img-thumbnail rounded me-2" style="width: 50px; height: 50px;">
+                                                                    {% else %}
+                                                                        <span class="d-inline-flex align-items-center justify-content-center text-white rounded m-1 me-2"
+                                                                            style="background-color: #0082ca; width: 25px; height: 25px;">
+                                                                            <i class="fas fa-camera fa-sm"></i>
+                                                                        </span>
+                                                                    {% endif %}
+                                            <a href="#" class="btn-link text-secondary" data-toggle="modal"
+                                                data-target="#imageModal{{ forloop.counter }}">
+                                                {{ image.original_file_name }}
+                                                <i class="far fa-eye ml-2"></i>
+                                            </a>
+                                        </li>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog"
+                                            aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="imageModalLabel{{ forloop.counter }}">
+                                                            View Image: {{ image.original_file_name }}</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <img src="{{ image.order_images.url }}" class="img-fluid"
+                                                            alt="{{ image.original_file_name }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No images available for this order.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p class="mb-4"><strong>Sign Mockups</strong></p>
+
+                            {% if mockup_images %}
+                                <ul class="list-group mx-auto">
+                                    {% for image in mockup_images %}
+                                        
+                                        
+                                        
+                                            <li class="list-group-item">
+                                                {% if image.order_images %}
+                                                                        <img src="{{ image.order_images.url }}" alt="{{ image.original_file_name }}"
+                                                                            class="img-thumbnail rounded me-2" style="width: 50px; height: 50px;">
+                                                                    {% else %}
+                                                                        <span class="d-inline-flex align-items-center justify-content-center text-white rounded m-1 me-2"
+                                                                            style="background-color: #0082ca; width: 25px; height: 25px;">
+                                                                            <i class="fas fa-camera fa-sm"></i>
+                                                                        </span>
+                                                                    {% endif %}
+                                                <a href="#" class="btn-link text-secondary" data-toggle="modal"
+                                                    data-target="#imageModal{{ forloop.counter }}">
+                                                    {{ image.original_file_name }}
+                                                    <i class="far fa-eye ml-2"></i>
+                                                </a>
+                                            </li>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog"
+                                                aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="imageModalLabel{{ forloop.counter }}">
+                                                                View Image: {{ image.original_file_name }}</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <img src="{{ image.order_images.url }}" class="img-fluid"
+                                                                alt="{{ image.original_file_name }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No images available for this order.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                 
+            </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p class="mb-4"><strong>Customer Details</strong></p>
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Full Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{ order.customer.first_name|capfirst }} {{order.customer.last_name|capfirst }}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Email</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{ order.customer.email }}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Phone</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{ order.customer.phone_number }}</p>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Address</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">
+                                    {% if order.shipping_address %}
+                                    {{ order.shipping_address|capfirst }}, {{ order.city|capfirst }}, {{order.state|capfirst }}
+                                    {% else %}
+                                    No Shipping Address
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Phone</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{ order.customer.phone_number }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <p class="mb-4"><strong>Sign Details</strong></p>
+                                
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <p class="mb-0">Design Notes</p>
+                                        
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <p class="text-muted mb-0">{{ order.design_notes|capfirst }} {{order.customer.last_name|capfirst }}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <p class="mb-0">Size</p>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <p class="text-muted mb-0">{{ order.height}} in. x {{order.width}} in.</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <p class="mb-0">Color</p>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <p class="text-muted mb-0">{{ order.color }}</p>
+                                    </div>
+                                </div>
+
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <p class="mb-0">Cut type</p>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <p class="text-muted mb-0">
+                                            {{order.cut_type}}
+                                        </p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <p class="mb-0">Quantity</p>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <p class="text-muted mb-0">{{ order.quantity }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-footer">
+                                <div class="row">
+                                  <div class="col-sm-3 col-md-3">
+                                    <div class="description-block border-right">
+                                      
+                                      <h5 class="description-header">
+                                        {% if order.deposit %}
+                                        ${{ order.deposit }}
+                                    {% else %}
+                                        $0
+                                    {% endif %}</h5>
+                                      <span class="description-text">TOTAL DEPOSIT</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                  </div>
+                                  <!-- /.col -->
+                                  <div class="col-sm-3 col-md-3">
+                                    <div class="description-block border-right">
+                                      
+                                      <h5 class="description-header">
+                                        {% if order.price %}
+                                        ${{ order.price }}
+                                    {% else %}
+                                        $0
+                                    {% endif %}</h5>
+                                      <span class="description-text">TOTAL COST</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                  </div>
+                                  <!-- /.col -->
+                                  <div class="col-sm-3 col-md-3">
+                                    <div class="description-block border-right">
+                                      
+                                      <h5 class="description-header">
+                                        ${{ order.get_balance_due }}
+                                    </h5>
+                                      <span class="description-text">BALANCE DUE</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                  </div>
+                                  <!-- /.col -->
+                                  <div class="col-sm-3 col-md-3">
+                                    <div class="description-block">
+                                      
+                                      <h5 class="description-header">
+                                        {% if order.total_profit %}
+                                        ${{ order.total_profit }}
+                                    {% else %}
+                                        $0
+                                    {% endif %}</h5>
+                                      <span class="description-text">TOTAL PROFIT</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                  </div>
+                                  <!-- /.col -->
+                                  
+                                </div>
+                                <!-- /.row -->
+                            </div>
+                            <div class="card-body">
+                                
+                                
+                                <div class="row">
+                                    <div class="col-xl-12 mb-3 mb-lg-5">
+                                        <div class="card">
+                                            <div class="d-flex card-header justify-content-between">
+                                                <h5 class="me-3 mb-0">Sign Material Cost</h5>
+                                                
+                                            </div>
+                                            <div class="card-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <!--List-item-->
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">Acrylic Cost</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {% if order.acrylic_cost %}
+                                                                    ${{ order.acrylic_cost }}
+                                                                {% else %}
+                                                                    $0
+                                                                {% endif %}
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">Silicone Cost</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {% if order.silicone_cost %}
+                                                                    ${{ order.silicone_cost}}
+                                                                {% else %}
+                                                                    $0
+                                                                {% endif %}
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">LED Light Cost</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {% if order.led_light_cost %}
+                                                                    ${{ order.led_light_cost }}
+                                                                {% else %}
+                                                                    $0
+                                                                {% endif %}
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">Power Supply Cost</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {% if order.power_supply_cost %}
+                                                                    ${{ order.power_supply_cost }}
+                                                                {% else %}
+                                                                    $0
+                                                                {% endif %}
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">Mounting Accessories Cost</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {% if order.mounting_accessories_cost %}
+                                                                    ${{ order.mounting_accessories_cost }}
+                                                                {% else %}
+                                                                    $0
+                                                                {% endif %}
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">Other Expenses</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                {% if order.other_expenses %}
+                                                                    ${{ order.other_expenses }}
+                                                                {% else %}
+                                                                    $0
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0"><strong>TOTAL COSTS:</strong></h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    ${{ order.total_material_cost }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 mb-3 mb-lg-5">
+                                        <div class="card">
+                                            <div class="d-flex card-header justify-content-between">
+                                                <h5 class="me-3 mb-0">Material Quantity</h5>
+                                                
+                                            </div>
+                                            <div class="card-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <!--List-item-->
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">LED Strip</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {% if order.led_light_meters %}
+                                                                    {{ order.led_light_meters }} Meters
+                                                                {% else %}
+                                                                    0 Meters
+                                                                {% endif %}
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">Silicone Strip</h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {% if order.silicone_amount_meters %}
+                                                                    {{ order.silicone_amount_meters }} Meters
+                                                                {% else %}
+                                                                    0 Meters
+                                                                {% endif %}
+                                                                    
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item pt-0">
+                                                        <div class="d-flex align-items-center">
+                                                            
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0"><strong>SIGN TOTAL AMPS:</strong></h6>
+                                                                
+                                                            </div>
+                                                            <div class="flex-shrink-0 text-end">
+                                                                <span>
+                                                                    {{ order.total_led_amps }} Amps (12V DC)
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    
+                    
+                </div>
+            </div>
+        </div>
+    
+
+
+
+</section>
+<div class="modal fade" id="uploadMockupModal" tabindex="-1" role="dialog" aria-labelledby="uploadMockupModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadMockupModalLabel">Upload Mockup Images</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Add your dynamic file upload field structure here -->
+          
+  
+         
+          <!-- Include necessary form fields and submit button -->
+          <form method="post" action="{% url 'orders:upload_images' order.order_number %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Add your form fields here, e.g., file input -->
+            <!-- ... -->
+            <div class="controls">
+                <div class="entry input-group upload-input-group">
+                  <input class="form-control" name="images" type="file">
+                  <button class="btn btn-upload btn-success btn-add" type="button">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+  
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}
+{% block scripts %}
+<script>
+    //Image Modal Add More Script
+$(function () {
+    $(document).on('click', '.btn-add', function (e) {
+      e.preventDefault();
+
+      var controlForm = $('.controls:first'),
+        currentEntry = $(this).parents('.entry:first'),
+        newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+      newEntry.find('input').val('');
+      controlForm.find('.entry:not(:last) .btn-add')
+        .removeClass('btn-add').addClass('btn-remove')
+        .removeClass('btn-success').addClass('btn-danger')
+        .html('<span class="fa fa-trash"></span>');
+    }).on('click', '.btn-remove', function (e) {
+      $(this).parents('.entry:first').remove();
+
+      e.preventDefault();
+      return false;
+    });
+  });
+
+
+
+
+  $(document).ready(function () {
+    // Select the alert element
+    var myAlert = $("#myAlert");
+
+    // Set a timeout to automatically close the alert after 4 seconds
+    setTimeout(function () {
+        myAlert.slideUp(500, function(){
+            myAlert.alert('close');
+        });
+    }, 4000);
+});
+</script>
+{% endblock %}

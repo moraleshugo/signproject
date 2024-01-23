@@ -1,0 +1,104 @@
+{% extends 'base_template.html' %}
+
+{% block pagetitle %}Create Customer{% endblock %}
+{% block pagebreadcrum %}Create Customer{% endblock %}
+
+{% block content %}
+{% if customer_form.errors %}
+{% for field in customer_form %}
+{% if field.errors %}
+<div class="alert alert-danger" role="alert">
+    <strong>{{ field.label }}:</strong>
+    {% for error in field.errors %}
+    {{ error }}
+    {% endfor %}
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% for field in order_form %}
+{% if field.errors %}
+<div class="alert alert-danger" role="alert">
+    <strong>{{ field.label }}:</strong>
+    {% for error in field.errors %}
+    {{ error }}
+    {% endfor %}
+</div>
+{% endif %}
+{% endfor %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        Customer Information
+                    </div>
+                    <!-- form start -->
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Customer Information Card -->
+                        <!-- Customer Information Card -->
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="id_first_name">First Name</label>
+                                        {{ customer_form.first_name }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="id_last_name">Last Name</label>
+                                        {{ customer_form.last_name }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_username">Username</label>
+                                {{ customer_form.username }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_email">Email address</label>
+                                {{ customer_form.email }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_phone_number">Phone Number</label>
+                                {{ customer_form.phone_number }}
+                            </div>
+
+
+
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-md-12 text-center"> <!-- Add text-center class to center content -->
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Create Customer</button>
+                                    <a href="{% url 'customer:customer_list' %}" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+                <!-- /.card -->
+
+
+            </div>
+            <!--/.col (left) -->
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+
+{% endblock %}

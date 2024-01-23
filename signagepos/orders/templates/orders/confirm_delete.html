@@ -1,0 +1,40 @@
+{% extends 'base_template.html' %}
+
+{% block pagetitle %}Edit Order{% endblock %}
+{% block pagebreadcrum %}Edit Order # {{ order.order_number }}{% endblock %}
+
+{% block content %}
+
+
+<section class="content">
+    
+
+
+  <div class="container-fluid">
+      <div class="row">
+          <!-- left column -->
+          <div class="col-md-12">
+              <!-- general form elements -->
+              <div class="card card-primary card-outline">
+                <div class="card-header">
+                <h3 class="card-title">
+                <i class="fas fa-edit"></i>
+                Confirm Delete 
+                </h3>
+                </div>
+                <div class="card-body">
+                  <h2>Confirm Delete</h2>
+                  <p>Are you sure you want to delete the order "{{ order.order_number }}"?</p>
+                  <form method="post" action="{% url 'orders:delete_order' order_number=order.order_number %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">
+                      <i class="fas fa-trash-alt"></i> Confirm Delete
+                    </button>
+                    <a href="{% url 'orders:order_list' %}" class="btn btn-secondary btn-sm">Cancel</a>
+                  </form>
+                </div>
+          </div>
+      </div>
+  </div><!-- /.container-fluid -->
+
+{% endblock %}

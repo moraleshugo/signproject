@@ -1,0 +1,19 @@
+
+  
+  /* Media query for medium-sized screens */
+  @media (max-width: 1280px) {
+      .col-md-3 {
+          flex-basis: 50%;
+          max-width: 50%;
+      }
+  }
+  
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+      .col-md-3 {
+          flex-basis: 100%;
+          max-width: 100%;
+      }
+  }
+  
+

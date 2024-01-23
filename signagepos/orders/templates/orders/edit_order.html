@@ -1,0 +1,769 @@
+{% extends 'base_template.html' %}
+
+{% block pagetitle %}Edit Order{% endblock %}
+{% block pagebreadcrum %}<a href="{% url 'orders:order_detail' order.order_number %}">Order Detail / </a> Edit Order # {{ order.order_number }}{% endblock %}
+
+{% block style %}
+<style>
+
+.btn-upload {
+  padding: 10px 20px;
+  margin-left: 10px;
+}
+.upload-input-group {
+    margin-bottom: 10px;
+}
+
+.input-group>.custom-select:not(:last-child), .input-group>.form-control:not(:last-child) {
+  height: 45px;
+}
+
+</style>
+{% endblock %}
+{% block content %}
+<div class="container mt-3 messages-container">
+    
+</div>
+<div class="container mt-3">
+    {% if messages %}
+    {% for message in messages %}
+    <div id="myAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+<section class="content">
+    
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <!-- Add inner card header content here -->
+                        <h3 class="card-title">Edit Order # {{ order.order_number }}</h3>
+                        
+                        <!-- Tracking number on the right side -->
+                        <div class="ml-auto">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-append">
+                                    <span class="btn btn-info btn-flat">Order Status</span>
+                                </span>
+                                {{ order_form.order_status }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- /.card-header -->
+                    <!-- Display form errors -->
+                    {% for field in order_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>{{ field.label }}:</strong>
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% for field in customer_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>{{ field.label }}:</strong>
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% for field in address_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>{{ field.label }}:</strong>
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+
+                    <!-- order details -->
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card card-primary card-outline">
+                                <div class="card-header">
+                                    <!-- Add inner card header content here -->
+                                    <h4 class="card-title">Customer Information</h4>
+                                    
+                                </div>
+                                <div class="card-body">
+                                    <!-- Inner card body content -->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="form-check">
+                                                    {{ order_form.is_business }}
+                                                    <label class="form-check-label" for="{{ order_form.is_business.id }}">
+                                                        Is Business
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_first_name">First Name</label>
+                                                {{ customer_form.first_name }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_last_name">Last Name</label>
+                                                {{ customer_form.last_name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_email">Email</label>
+                                                {{ customer_form.email }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_phone_number">Phone Number</label>
+                                                {{ customer_form.phone_number }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Customer Fields -->
+
+
+
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="id_street_address">Street Address</label>
+                                                {{ order_form.shipping_address }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="id_city">City</label>
+                                                {{ order_form.city }}
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="id_state">State</label>
+                                                {{ order_form.state }}
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="id_zip_code">ZIP Code</label>
+                                                {{ order_form.zip_code}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Add other customer fields similarly -->
+
+                                </div>
+                            </div>
+                            <!-- Order Fields -->
+                            <div class="card  card-primary card-outline">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <!-- Add inner card header content here -->
+                                    <h3 class="card-title">Sign Order Details</h3>
+                                    
+                                    <!-- Tracking number on the right side -->
+                                    <div class="ml-auto">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-append">
+                                                <span class="btn btn-info btn-flat">Tracking Number</span>
+                                            </span>
+                                            {{ order_form.tracking_number }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="id_quantity">Quantity</label>
+                                                {{ order_form.quantity  }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label for="id_quantity">Warranty Start Date</label>
+                                                {{ order_form.warranty_start_date  }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label for="id_quantity">Warranty Duration</label>
+                                                {{ order_form.warranty_duration  }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label for="id_quantity">Warranty Expires</label>
+                                                {% if order.warranty_end_date %}
+                                                    {% if order.warranty_end_date < now %}
+                                                        <p>Warranty Expired</p>
+                                                    {% else %}
+                                                        <p>{{ order.warranty_end_date }}</p>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <p>No Expire Date</p>
+                                                {% endif %}
+
+                                                
+                                            </div>
+                                        </div>
+                                        
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <label for="id_color">Size </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Width</span>
+                                                </div>
+                                                {{ order_form.width }}
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">in</span>
+                                                </div>
+                                                <!-- Add a separator for width x height with space -->
+                                                <span class="input-group-text" style="margin: 0 5px;">x</span>
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Height</span>
+                                                </div>
+                                                {{ order_form.height }}
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">in</span>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_color">Color</label>
+                                                {{ order_form.color }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_cut_type">Cut Type</label>
+                                                {{ order_form.cut_type }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="id_design_notes">Design Notes</label>
+                                                {{ order_form.design_notes }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                                        <p class="mb-0">Sign Mockups</p>
+                                                        <!-- Add a "plus" sign and the link here -->
+                                                        <div>
+                                                            <a href="#" class="btn-link text-secondary" data-toggle="modal" data-target="#uploadMockupModal">
+                                                                <span class="d-inline-flex align-items-center justify-content-center text-white rounded m-1 me-2"
+                                                                    style="background-color: #0082ca; width: 25px; height: 25px;">
+                                                                    <i class="fas fa-plus fa-sm"></i>
+                                                                </span>
+                                                                Add Mockups
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    {% if order.orderimage_set.all %}
+                                                        <ul class="list-group mx-auto" style="overflow-y: auto; max-height: 250px;">
+                                                            {% for image in order.orderimage_set.all %}
+                                                                {% if image.is_mockup %}
+                                                                
+                                                                
+                                                                <li class="list-group-item">
+                                                                    {% if image.order_images %}
+                                                                        <img src="{{ image.order_images.url }}" alt="{{ image.original_file_name }}"
+                                                                            class="img-thumbnail rounded me-2" style="width: 50px; height: 50px;">
+                                                                    {% else %}
+                                                                        <span class="d-inline-flex align-items-center justify-content-center text-white rounded m-1 me-2"
+                                                                            style="background-color: #0082ca; width: 25px; height: 25px;">
+                                                                            <i class="fas fa-camera fa-sm"></i>
+                                                                        </span>
+                                                                    {% endif %}
+                                                                    <a href="#" class="btn-link text-secondary" data-toggle="modal"
+                                                                        data-target="#imageModal{{ forloop.counter }}">
+                                                                        {{ image.original_file_name }}
+                                                                        <i class="far fa-eye ml-2"></i>
+                                                                    </a>
+                                                                    <a href="#" class="btn-link text-danger delete-image" data-image-id="{{ image.id }}">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </a>
+                                                                    
+                                                                </li>
+                                                                    <!-- Modal -->
+                                                                    <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog"
+                                                                        aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="imageModalLabel{{ forloop.counter }}">
+                                                                                        View Image: {{ image.original_file_name }}</h5>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <img src="{{ image.order_images.url }}" class="img-fluid"
+                                                                                        alt="{{ image.original_file_name }}">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <p>No images available for this order.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                                        <p class="mb-0">Customer Files</p>
+                                                        <!-- Add a "plus" sign and the link here -->
+                                                        <div>
+                                                            <a href="#" class="btn-link text-secondary" data-toggle="modal" data-target="#uploadFilesModal">
+                                                                <span class="d-inline-flex align-items-center justify-content-center text-white rounded m-1 me-2"
+                                                                    style="background-color: #0082ca; width: 25px; height: 25px;">
+                                                                    <i class="fas fa-plus fa-sm"></i>
+                                                                </span>
+                                                                Add Files
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    {% if order.orderimage_set.all %}
+                                                        <ul class="list-group mx-auto" style="overflow-y: auto; max-height: 250px;">
+                                                            {% for image in order.orderimage_set.all %}
+                                                            {% if not image.is_mockup %}
+
+                                                                
+                                                                
+                                                                <li class="list-group-item">
+                                                                    {% if image.order_images %}
+                                                                        <img src="{{ image.order_images.url }}" alt="{{ image.original_file_name }}"
+                                                                            class="img-thumbnail rounded me-2" style="width: 50px; height: 50px;">
+                                                                    {% else %}
+                                                                        <span class="d-inline-flex align-items-center justify-content-center text-white rounded m-1 me-2"
+                                                                            style="background-color: #0082ca; width: 25px; height: 25px;">
+                                                                            <i class="fas fa-camera fa-sm"></i>
+                                                                        </span>
+                                                                    {% endif %}
+                                                                    <a href="#" class="btn-link text-secondary" data-toggle="modal"
+                                                                        data-target="#imageModal{{ forloop.counter }}">
+                                                                        {{ image.original_file_name }}
+                                                                        <i class="far fa-eye ml-2"></i>
+                                                                    </a>
+                                                                    <a href="#" class="btn-link text-danger delete-image" data-image-id="{{ image.id }}">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </a>
+                                                                    
+                                                                </li>
+                                                                    <!-- Modal -->
+                                                                    <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog"
+                                                                        aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="imageModalLabel{{ forloop.counter }}">
+                                                                                        View Image: {{ image.original_file_name }}</h5>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <img src="{{ image.order_images.url }}" class="img-fluid"
+                                                                                        alt="{{ image.original_file_name }}">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <p>No images available for this order.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header card-primary card-outline">
+                                    <!-- Add inner card header content here -->
+                                    <h3 class="card-title">Sign Cost</h3>
+                                    
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="id_price">Deposit Amount</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.deposit }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="id_price">Total Price</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.price }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h4>Material Used</h4>
+                                    
+        
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_acrylic_cost">Acrylic Cost</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.acrylic_cost }}
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_silicone_cost">Silicone Cost</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.silicone_cost }}
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_led_light_cost">LED Light Cost</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.led_light_cost }}
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_power_supply_cost">Power Supply Cost</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.power_supply_cost }}
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_mounting_accessories_cost">Mounting Accessories Cost</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.mounting_accessories_cost }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_mounting_accessories_cost">Other Expenses</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    {{ order_form.other_expenses }}
+                                                </div>
+                                            </div>
+                                        </div>
+        
+        
+                                    </div>
+        
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_led_light_meters">Silicone Used  </label>
+                                                <div class="input-group">
+                                                    {{ order_form.silicone_amount_meters }}
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">meters</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="id_led_light_meters">LED Light Used </label>
+                                                <div class="input-group">
+                                                    {{ order_form.led_light_meters }}
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">meters</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                    </div>
+        
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="id_notes">Notes</label>
+                                                {{ order_form.company_notes }}
+                                            </div>
+                                        </div>
+        
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<div class="modal fade" id="uploadMockupModal" tabindex="-1" role="dialog" aria-labelledby="uploadMockupModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadMockupModalLabel">Upload Mockup Images</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Add your dynamic file upload field structure here -->
+          
+  
+         
+          <!-- Include necessary form fields and submit button -->
+          <form method="post" action="{% url 'orders:upload_images' order.order_number %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Add your form fields here, e.g., file input -->
+            <!-- ... -->
+            <div class="controls">
+                <div class="entry input-group upload-input-group">
+                  <input class="form-control" name="mockupImages" type="file">
+                  <button class="btn btn-upload btn-success btn-add" type="button">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+  
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="uploadFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadFilesModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadFilesModalLabel">Upload Sign Images</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Add your dynamic file upload field structure here -->
+          
+  
+         
+          <!-- Include necessary form fields and submit button -->
+          <form method="post" action="{% url 'orders:upload_images' order.order_number %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Add your form fields here, e.g., file input -->
+            <!-- ... -->
+            <div class="controls">
+                <div class="entry input-group upload-input-group">
+                  <input class="form-control" name="signImages" type="file">
+                  <button class="btn btn-upload btn-success btn-add" type="button">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+  
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script>
+//Modal Add More Images Script
+//Image Modal Add More Script
+
+$(function () {
+  // Handle 'Add' and 'Remove' buttons in both modals
+  $(document).on('click', '.btn-add', function (e) {
+    e.preventDefault();
+
+    var currentEntry = $(this).parents('.entry:first'),
+        newEntry = $(currentEntry.clone()).appendTo(currentEntry.closest('.controls'));
+
+    newEntry.find('input').val('');
+    newEntry.find('.btn-add')
+      .removeClass('btn-add').addClass('btn-remove')
+      .removeClass('btn-success').addClass('btn-danger')
+      .html('<span class="fa fa-trash"></span>');
+  }).on('click', '.btn-remove', function (e) {
+    $(this).parents('.entry:first').remove();
+    e.preventDefault();
+    return false;
+  });
+
+  // Show the modal when the 'Add' button is clicked
+  $(document).on('click', '.btn-show-modal', function (e) {
+    e.preventDefault();
+    var modalId = $(this).data('target');
+    $(modalId).modal('show');
+  });
+});
+
+
+
+
+    $(document).ready(function() {
+    $('.delete-image').on('click', function() {
+        var imageId = $(this).data('image-id');
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+        // Store the reference to 'this'
+        var deleteButton = $(this);
+
+        $.ajax({
+            type: 'POST',
+            url: '/delete_image/' + imageId + '/',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Remove the closest 'li' element
+                    deleteButton.closest('li').remove();
+                    
+                    // Display a success message
+                    var successMessage = 'Image deleted successfully.';
+                    var messagesContainer = $('.messages-container');
+
+                    // Remove existing messages
+                    messagesContainer.empty();
+
+                    // Display success message
+                messagesContainer.html('<div id="myAlert" class="alert alert-success alert-dismissible fade show" role="alert">Image deleted successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+
+                setTimeout(function() {
+    $('#myAlert').slideUp(500, function() {
+        $(this).remove(); // Remove the alert from the DOM after sliding up
+    });
+}, 3000);
+                } else {
+                    console.error('Failed to delete image.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+});
+
+
+$(document).ready(function () {
+    // Select the alert element
+    var myAlert = $("#myAlert");
+
+    // Set a timeout to automatically close the alert after 4 seconds
+    setTimeout(function () {
+        myAlert.slideUp(500, function(){
+            myAlert.alert('close');
+        });
+    }, 4000);
+});
+
+</script>
+{% endblock %}

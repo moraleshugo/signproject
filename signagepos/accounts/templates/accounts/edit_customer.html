@@ -1,0 +1,195 @@
+{% extends 'base_template.html' %}
+
+{% block pagetitle %}Edit Order{% endblock %}
+{% block pagebreadcrum %}<a href="{% url 'customer:customer_list' %}">Customers / </a> Edit Customer {{ customer.first_name }} {{ customer.last_name }}{% endblock %}
+
+{% block style %}
+<style>
+
+</style>
+{% endblock %}
+{% block content %}
+<div class="container mt-3 messages-container">
+    
+</div>
+<div class="container mt-3">
+    {% if messages %}
+    {% for message in messages %}
+    <div id="myAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+<section class="content">
+    
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <!-- Add inner card header content here -->
+                        <h3 class="card-title">Edit Customer {{ order.first_name }} {{ order.last_name }}</h3>
+                        
+                        <!-- Tracking number on the right side -->
+                        <div class="ml-auto">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-append">
+                                    <span class="btn btn-info btn-flat">Order Status</span>
+                                </span>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- /.card-header -->
+                    <!-- Display form errors -->
+                    {% for field in order_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>{{ field.label }}:</strong>
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% for field in customer_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>{{ field.label }}:</strong>
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% for field in address_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>{{ field.label }}:</strong>
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+
+                    <!-- order details -->
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card card-primary card-outline">
+                                <div class="card-header">
+                                    <!-- Add inner card header content here -->
+                                    <h4 class="card-title">Customer Information</h4>
+                                    
+                                </div>
+                                <div class="card-body">
+                                    <!-- Inner card body content -->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="form-check">
+                                                    {{ form.is_admin }}
+                                                    <label class="form-check-label" for="{{ order_form.is_business.id }}">
+                                                        Is Business
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_first_name">First Name</label>
+                                                {{ form.first_name }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_last_name">Last Name</label>
+                                                {{ form.last_name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="id_first_name">Username</label>
+                                                {{ form.username }}
+                                            </div>
+                                        </div>
+                                        
+                                        
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_email">Email</label>
+                                                {{ form.email }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="id_phone_number">Phone Number</label>
+                                                {{ form.phone_number }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Customer Fields -->
+
+
+
+
+                                    
+
+                                    <!-- Add other customer fields similarly -->
+
+                                </div>
+                            </div>
+                            <!-- Order Fields -->
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <a href="{% url 'customer:edit_customer' customer.id %}" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+
+  
+{% endblock %}
+{% block scripts %}
+<script>
+$(document).ready(function () {
+    // Select the alert element
+    var myAlert = $("#myAlert");
+
+    // Set a timeout to automatically close the alert after 4 seconds
+    setTimeout(function () {
+        myAlert.slideUp(500, function(){
+            myAlert.alert('close');
+        });
+    }, 4000);
+});
+
+
+    
+
+</script>
+{% endblock %}

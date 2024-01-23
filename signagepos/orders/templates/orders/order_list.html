@@ -1,0 +1,1170 @@
+{% extends 'base_template.html' %}
+
+{% block pagetitle %}Orders List{% endblock %}
+{% block pagebreadcrum %}Orders{% endblock %}
+{% block style %}
+<style>
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="container mt-3">
+    {% if messages %}
+    {% for message in messages %}
+    <div id="myAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<!-- Main content -->
+<section class="content pb-3">
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <div class="col-md-3">
+                <!-- Your Backlog cards go here -->
+                <div class="card card-row card-dark collapse-card  newOrdersContainer">
+                    <div class=" card-header">
+                        <h3 class="card-title">
+                            New Orders<span class="badge badge-light" style="margin-left: 5px">{{ new_orders|length}}</span>
+
+                        </h3>
+
+                        <div class="card-tools">
+
+                            <a class="btn btn-tool" href="{% url 'orders:create_order' %}">
+                                <i class="fas fa-plus"></i>
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <!-- Your order card content goes here -->
+                    {% if new_orders %}
+                    <div class="card-body">
+
+                        {% for order in new_orders %}
+                        <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ order.customer.first_name }} {{ order.customer.last_name }}</h3>
+                                <div class="card-tools">
+                                    <a class="btn btn-tool" href="{% url 'orders:order_detail' order_number=order.order_number %}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                    
+                                    <button type="button" class="btn btn-tool " data-toggle="collapse" data-target="#collapse{{ order.order_number }}" aria-expanded="false" aria-controls="collapse{{ order.order_number }}">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="collapse{{ order.order_number }}" class="card-body collapse">
+
+                                <div class="text-center">
+                                    {% if order.image %}
+
+                                    <img class="img-thumbnail" src="{{ order.image.url }}" alt="User profile picture">
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                                <h3 class="profile-username text-center">{{ order.customer.first_name }} {{order.customer.last_name }}</h3>
+                                <p class="text-muted text-center">Order # {{ order.order_number }}</p>
+                                {% if order.is_business %}
+                                <p class="text-muted text-center">Business Owner</p>
+                                {% else %}
+                                <p class="text-muted text-center">Individual Customer</p>
+                                {% endif %}
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>Order Created</b> <a class="float-right">{{ order.created_on|date:"F j, Y"}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Quantity:</b> <a class="float-right">{{order.quantity}}</a>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <b>Sign Size W x H:</b> <a class="float-right">{{order.width}}in. x
+                                            {{order.height}}in.</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Color:</b> <a class="float-right">{{order.color}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Acrylic Shape:</b> <a class="float-right">{{order.cut_type}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="far fa-file-alt mr-1"></i> Customer Notes:</strong>
+                                        <p class="text-muted">{{order.design_notes}}</p>
+                                    </li>
+
+
+                                </ul>
+
+
+                                <div class="row">
+
+                                    <div class="col-md-12">
+
+
+
+                                        <h5 class="mt-5 text-muted">Project files</h5>
+{% if order.orderimage_set.exists %}
+    <ul class="list-unstyled">
+        {% for image in order.orderimage_set.all %}
+            <li>
+                <a href="#" class="btn-link text-secondary" data-toggle="modal" data-target="#imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}">
+                    <i class="far fa-fw fa-image"></i> {{ image.original_file_name }}
+                </a>
+                <!-- Modal -->
+                <div class="modal fade" id="imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}">View Image: {{ image.original_file_name }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img src="{{ image.order_images.url }}" class="img-fluid" alt="{{ image.original_file_name }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No project files available.</p>
+{% endif %}
+
+
+                                        <div class="text-center">
+                                            <!-- <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                data-target="#startOrderModal"
+                                                data-order-number="{{ order.order_number }}">
+                                                Start Order
+                                            </button> -->
+                                            <button type="button" class="btn btn-primary status-transition-btn" data-toggle="modal"
+                                                data-target="#confirmStatusTransitionModal" data-order-number="{{ order.order_number }}" data-new-status="to_do">
+                                                Start Order
+                                            </button>
+
+                                            <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-md btn-warning">View Order</a>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+                        {% endfor %}
+
+
+                    </div>
+                    {% else %}
+
+                    <p class="text-center" style="font-size: 18px; color: #6c757d;">No new orders.</p>
+
+                    {% endif %}
+
+                    <div class="text-center">
+                        <button id="newLoadMoreBtn" class="btn btn-link">Load More...</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <!-- Your Backlog cards go here -->
+                <div class="card card-row card-danger collapse-card  todoOrdersContainer">
+                    <div class=" card-header">
+                        <h3 class="card-title">
+                            To Do <span class="badge badge-light" style="margin-left: 5px">{{ to_do_orders|length}}</span>
+
+                        </h3>
+
+                        
+                    </div>
+
+                    <!-- Your order card content goes here -->
+                    {% if to_do_orders %}
+                    <div class="card-body">
+
+                        {% for order in to_do_orders %}
+                        <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ order.customer.first_name }} {{ order.customer.last_name }}</h3>
+                                <div class="card-tools">
+                                    <a class="btn btn-tool" href="{% url 'orders:order_detail' order_number=order.order_number %}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                    
+                                    <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapse{{ order.order_number }}" aria-expanded="false" aria-controls="collapse{{ order.order_number }}">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="collapse{{ order.order_number }}" class="card-body collapse">
+
+                                <div class="text-center">
+                                    {% if order.image %}
+
+                                    <img class="img-thumbnail" src="{{ order.image.url }}" alt="User profile picture">
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                                <h3 class="profile-username text-center">{{ order.customer.first_name }} {{order.customer.last_name }}</h3>
+                                <p class="text-muted text-center">Order # {{ order.order_number }}</p>
+                                {% if order.is_business %}
+                                <p class="text-muted text-center">Business Owner</p>
+                                {% else %}
+                                <p class="text-muted text-center">Individual Customer</p>
+                                {% endif %}
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>Order Created</b> <a class="float-right">{{ order.created_on|date:"F j, Y"}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Quantity:</b> <a class="float-right">{{order.quantity}}</a>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <b>Sign Size W x H:</b> <a class="float-right">{{order.width}}in. x
+                                            {{order.height}}in.</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Color:</b> <a class="float-right">{{order.color}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Acrylic Shape:</b> <a class="float-right">{{order.cut_type}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="far fa-file-alt mr-1"></i> Customer Notes:</strong>
+                                        <p class="text-muted">{{order.design_notes}}</p>
+                                    </li>
+
+
+                                </ul>
+
+
+                                <div class="row">
+
+                                    <div class="col-md-12">
+
+
+
+                                        <h5 class="mt-5 text-muted">Project files</h5>
+{% if order.orderimage_set.exists %}
+    <ul class="list-unstyled">
+        {% for image in order.orderimage_set.all %}
+            <li>
+                <a href="#" class="btn-link text-secondary" data-toggle="modal" data-target="#imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}">
+                    <i class="far fa-fw fa-image"></i> {{ image.original_file_name }}
+                </a>
+                <!-- Modal -->
+                <div class="modal fade" id="imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}">View Image: {{ image.original_file_name }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img src="{{ image.order_images.url }}" class="img-fluid" alt="{{ image.original_file_name }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No project files available.</p>
+{% endif %}
+
+
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-primary status-transition-btn" data-toggle="modal"
+                                                data-target="#confirmStatusTransitionModal" data-order-number="{{ order.order_number }}" data-new-status="in_progress">
+                                                In Progress
+                                            </button>
+
+                                            <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-md btn-warning">View Order</a>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+                        {% endfor %}
+
+
+                    </div>
+                    {% else %}
+
+                    <p class="text-center" style="font-size: 18px; color: #6c757d;">No new orders.</p>
+
+                    {% endif %}
+
+                    <div class="text-center">
+                        <button id="todoLoadMoreBtn" class="btn btn-link">Load More...</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <!-- Your Backlog cards go here -->
+                <div class="card card-row card-primary collapse-card  inprogressOrdersContainer">
+                    <div class=" card-header">
+                        <h3 class="card-title">
+                            In Progress<span class="badge badge-light" style="margin-left: 5px">{{ in_progress_orders|length}}</span>
+
+                        </h3>
+
+                        
+                    </div>
+
+                    <!-- Your order card content goes here -->
+                    {% if in_progress_orders %}
+                    <div class="card-body">
+
+                        {% for order in in_progress_orders %}
+                        <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ order.customer.first_name }} {{ order.customer.last_name }}</h3>
+                                <div class="card-tools">
+                                    <a class="btn btn-tool" href="{% url 'orders:order_detail' order_number=order.order_number %}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                    
+                                    <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapse{{ order.order_number }}" aria-expanded="false" aria-controls="collapse{{ order.order_number }}">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="collapse{{ order.order_number }}" class="card-body collapse">
+
+                                <div class="text-center">
+                                    {% if order.image %}
+
+                                    <img class="img-thumbnail" src="{{ order.image.url }}" alt="User profile picture">
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                                <h3 class="profile-username text-center">{{ order.customer.first_name }} {{order.customer.last_name }}</h3>
+                                <p class="text-muted text-center">Order # {{ order.order_number }}</p>
+                                {% if order.is_business %}
+                                <p class="text-muted text-center">Business Owner</p>
+                                {% else %}
+                                <p class="text-muted text-center">Individual Customer</p>
+                                {% endif %}
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>Order Created</b> <a class="float-right">{{ order.created_on|date:"F j, Y"}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Quantity:</b> <a class="float-right">{{order.quantity}}</a>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <b>Sign Size W x H:</b> <a class="float-right">{{order.width}}in. x
+                                            {{order.height}}in.</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Color:</b> <a class="float-right">{{order.color}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Acrylic Shape:</b> <a class="float-right">{{order.cut_type}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="far fa-file-alt mr-1"></i> Customer Notes:</strong>
+                                        <p class="text-muted">{{order.design_notes}}</p>
+                                    </li>
+
+
+                                </ul>
+
+
+                                <div class="row">
+
+                                    <div class="col-md-12">
+
+
+
+                                        <h5 class="mt-5 text-muted">Project files</h5>
+                                        <ul class="list-unstyled">
+                                            {% for image in order.orderimage_set.all %}
+                                            <li>
+                                                <a href="#" class="btn-link text-secondary" data-toggle="modal" data-target="#imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}">
+                                                    <i class="far fa-fw fa-image"></i> {{ image.original_file_name }}
+                                                </a>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}">View Image: {{ image.original_file_name }}</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <img src="{{ image.order_images.url }}" class="img-fluid" alt="{{ image.original_file_name }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-primary status-transition-btn" data-toggle="modal"
+                                                data-target="#confirmStatusTransitionModal" data-order-number="{{ order.order_number }}" data-new-status="done">
+                                                Complete
+                                            </button>
+
+                                            <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-md btn-warning">View Order</a>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+                        {% endfor %}
+
+
+                    </div>
+                    {% else %}
+
+                    <p class="text-center" style="font-size: 18px; color: #6c757d;">No new orders.</p>
+
+                    {% endif %}
+
+                    <div class="text-center">
+                        <button id="inprogressLoadMoreBtn" class="btn btn-link">Load More...</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <!-- Your Backlog cards go here -->
+                <div class="card card-row card-success collapse-card  doneOrdersContainer">
+                    <div class=" card-header">
+                        <h3 class="card-title">
+                            Done<span class="badge badge-light" style="margin-left: 5px">{{ done_orders|length}}</span>
+
+                        </h3>
+
+                        
+                    </div>
+
+                    <!-- Your order card content goes here -->
+                    {% if done_orders %}
+                    <div class="card-body">
+                    
+                        {% for order in done_orders %}
+                        
+                        <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ order.customer.first_name }} {{ order.customer.last_name }}</h3>
+                                <div class="card-tools">
+                                    <a class="btn btn-tool" href="{% url 'orders:order_detail' order_number=order.order_number %}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                    
+                                    <button type="button" class="btn btn-tool" data-toggle="collapse"
+                                        data-target="#collapse{{ order.order_number }}" aria-expanded="false"
+                                        aria-controls="collapse{{ order.order_number }}">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="collapse{{ order.order_number }}" class="card-body collapse">
+                    
+                                <div class="text-center">
+                                    {% if order.image %}
+                    
+                                    <img class="img-thumbnail" src="{{ order.image.url }}" alt="User profile picture">
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                                <h3 class="profile-username text-center">{{ order.customer.first_name }} {{order.customer.last_name }}</h3>
+                                <p class="text-muted text-center">Order # {{ order.order_number }}</p>
+                                {% if order.is_business %}
+                                <p class="text-muted text-center">Business Owner</p>
+                                {% else %}
+                                <p class="text-muted text-center">Individual Customer</p>
+                                {% endif %}
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>Order Created</b> <a class="float-right">{{ order.created_on|date:"F j, Y"}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Quantity:</b> <a class="float-right">{{order.quantity}}</a>
+                                    </li>
+                    
+                                    <li class="list-group-item">
+                                        <b>Sign Size W x H:</b> <a class="float-right">{{order.width}}in. x
+                                            {{order.height}}in.</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Color:</b> <a class="float-right">{{order.color}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Acrylic Shape:</b> <a class="float-right">{{order.cut_type}}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="far fa-file-alt mr-1"></i> Customer Notes:</strong>
+                                        <p class="text-muted">{{order.design_notes}}</p>
+                                    </li>
+                    
+                    
+                                </ul>
+                    
+                    
+                                <div class="row">
+                    
+                                    <div class="col-md-12">
+                    
+                    
+                    
+                                        <h5 class="mt-5 text-muted">Project files</h5>
+                                        <ul class="list-unstyled">
+                                            {% for image in order.orderimage_set.all %}
+                                            <li>
+                                                <a href="#" class="btn-link text-secondary" data-toggle="modal"
+                                                    data-target="#imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}">
+                                                    <i class="far fa-fw fa-image"></i> {{ image.original_file_name }}
+                                                </a>
+                                                <!-- Modal -->
+                                                <div class="modal fade"
+                                                    id="imageModal{{ forloop.parentloop.counter }}_{{ forloop.counter }}" tabindex="-1"
+                                                    role="dialog"
+                                                    aria-labelledby="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="imageModalLabel{{ forloop.parentloop.counter }}_{{ forloop.counter }}">
+                                                                    View Image: {{ image.original_file_name }}</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <img src="{{ image.order_images.url }}" class="img-fluid"
+                                                                    alt="{{ image.original_file_name }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                    
+                                        <div class="text-center">
+                    
+                    
+                                            <a href="{% url 'orders:order_detail' order_number=order.order_number %}"
+                                                class="btn btn-sm btn-warning">View Order</a>
+                    
+                                        </div>
+                                    </div>
+                                </div>
+                    
+                    
+                            </div>
+                    
+                    
+                        </div>
+                        
+                        {% endfor %}
+                    
+                    
+                    </div>
+                    {% else %}
+
+                    <p class="text-center" style="font-size: 18px; color: #6c757d;">No new orders.</p>
+
+                    {% endif %}
+
+                    <div class="text-center">
+                        <button id="doneLoadMoreBtn" class="btn btn-link">Load More...</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</section>
+<section class="content">
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+    
+    
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <h3 class="card-title">Orders</h3>
+                        <div class="dropdown ml-auto"> <!-- Added ml-auto class to push dropdown to the right -->
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="yearFilterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% if selected_year %}
+                                    {{ selected_year }}
+                                {% else %}
+                                    Select Year
+                                {% endif %}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="yearFilterDropdown">
+                                <a class="dropdown-item" href="?selected_year=all">All</a>
+                                {% for year in available_years %}
+                                    <a class="dropdown-item" href="?selected_year={{ year.year }}">{{ year.year }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    
+                    
+                    
+                    <div class="card-body">
+                        <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <div class="dt-buttons btn-group flex-wrap"> <button
+                                            class="btn btn-secondary buttons-copy buttons-html5" tabindex="0"
+                                            aria-controls="example1" type="button"><span>Copy</span></button> <button
+                                            class="btn btn-secondary buttons-csv buttons-html5" tabindex="0"
+                                            aria-controls="example1" type="button"><span>CSV</span></button> <button
+                                            class="btn btn-secondary buttons-excel buttons-html5" tabindex="0"
+                                            aria-controls="example1" type="button"><span>Excel</span></button> <button
+                                            class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0"
+                                            aria-controls="example1" type="button"><span>PDF</span></button> <button
+                                            class="btn btn-secondary buttons-print" tabindex="0" aria-controls="example1"
+                                            type="button"><span>Print</span></button>
+                                        <div class="btn-group"><button
+                                                class="btn btn-secondary buttons-collection dropdown-toggle buttons-colvis"
+                                                tabindex="0" aria-controls="example1" type="button"
+                                                aria-haspopup="true"><span>Column visibility</span><span
+                                                    class="dt-down-arrow"></span></button></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search"
+                                                class="form-control form-control-sm" placeholder=""
+                                                aria-controls="example1"></label></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 table-responsive">
+                                    <table id="example"
+                                    class="table table-head-fixed table-bordered table-striped dataTable dtr-inline p-0 table-hover text-nowrap "
+                                    aria-describedby="example1_info">
+                                    <thead>
+                                        <tr>
+                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="example1"
+                                                rowspan="1" colspan="1"
+                                                aria-label="Image: activate to sort column ascending" style="" data-sortable="true">
+    
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Image: activate to sort column ascending" style="">
+                                                Image
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Order Number: activate to sort column ascending"
+                                                style="">
+                                                Order Number
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Customer: activate to sort column ascending"
+                                                style="">
+                                                Customer
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Width x Height: activate to sort column ascending"
+                                                style="">
+                                                Width x Height
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                Color
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Cut Type: activate to sort column ascending"
+                                                style="">
+                                                Cut Type
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                Sign Notes
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Is Business: activate to sort column ascending"
+                                                style="">
+                                                Is Business
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Deposit: activate to sort column ascending"
+                                                style="">
+                                                Deposit
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Price: activate to sort column ascending" style="">
+                                                Price
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Balance Due: activate to sort column ascending"
+                                                style="">
+                                                Balance Due
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Tracking Number: activate to sort column ascending"
+                                                style="">
+                                                Tracking Number
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                style="">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if all_orders_page %}
+                                        {% for order in all_orders_page %}
+                                        <tr class="odd custom-row-height">
+                                            <td class="vertical-badge-cell">
+                                                {% if order.process_status == 'new' %}
+                                                    <span class="badge bg-success vertical-badge">{{ order.order_status }}</span>
+                                                {% endif %}
+                                            </td>
+                                            
+    
+    
+    
+                                            <td style="">
+                                                {% if order.orderimage_set.exists %}
+                                                    {% with order_image=order.orderimage_set.first %}
+                                                        <img src="{{ order_image.order_images.url }}" alt="Order Image" style="max-width: 100%; max-height: 100%;">
+                                                    {% endwith %}
+                                                {% else %}
+                                                    <p>No image</p>
+                                                {% endif %}
+                                            </td>
+    
+                                            <td style="">{{ order.order_number }}</td>
+                                            <td style="">{{ order.customer.first_name }} {{ order.customer.last_name }}
+                                            </td>
+                                            <td style="">{{ order.width }} in x {{ order.height }} in</td>
+                                            <td style="">{{ order.color }}</td>
+    
+                                            <td style="">{{ order.cut_type }}</td>
+                                            <td style="">{{ order.design_notes }}</td>
+                                            <td style="">{{ order.is_business }}</td>
+                                            <td style="">{{ order.deposit }}</td>
+                                            <td style="">{{ order.price }}</td>
+                                            <td style="">{{ order.get_balance_due }}</td>
+                                            <td style="">{{ order.tracking_number }}</td>
+                                            <td class="text-right py-0 align-middle">
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{% url 'orders:edit_order' order_number=order.order_number %}" class="btn btn-info"><i class="fas fa-pen"></i></a>
+                                                    <a href="{% url 'orders:delete_order' order.order_number %}"
+                                                        class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                        <tr class="custom-row-height">
+                                            <td colspan="18">No orders available.</td>
+                                        </tr>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="example1"
+                                                rowspan="1" colspan="1"
+                                                aria-label="Image: activate to sort column ascending" style="">
+    
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Image: activate to sort column ascending" style="">
+                                                Image
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Order Number: activate to sort column ascending"
+                                                style="">
+                                                Order Number
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Customer: activate to sort column ascending"
+                                                style="">
+                                                Customer
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Width x Height: activate to sort column ascending"
+                                                style="">
+                                                Width x Height
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                Color
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Cut Type: activate to sort column ascending"
+                                                style="">
+                                                Cut Type
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                Sign Notes
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Is Business: activate to sort column ascending"
+                                                style="">
+                                                Is Business
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Deposit: activate to sort column ascending"
+                                                style="">
+                                                Deposit
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Price: activate to sort column ascending" style="">
+                                                Price
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Balance Due: activate to sort column ascending"
+                                                style="">
+                                                Balance Due
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Tracking Number: activate to sort column ascending"
+                                                style="">
+                                                Tracking Number
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                style="">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                    <!-- Add footer if needed -->
+                                </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">{% if queryset.has_other_pages %}
+                                        <p>Showing {{ queryset.start_index }} to {{ queryset.end_index }} of {{ queryset.paginator.count }} entries</p>
+                                      {% else %}
+                                        <p>Showing all {{ queryset.paginator.count }} entries</p>
+                                      {% endif %}
+                                      </div>
+                                </div>
+                                <div class="col-sm-12 col-md-7">
+                                    <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
+                                        <ul class="pagination">
+                                
+                                            {% if all_orders_page.has_previous %}
+                                                <li class="paginate_button page-item" id="example1_previous">
+                                                    <a href="?page=1" aria-controls="example1" tabindex="0" class="page-link">First</a>
+                                                </li>
+                                                <li class="paginate_button page-item" id="example1_previous">
+                                                    <a href="?page={{ all_orders_page.previous_page_number }}" aria-controls="example1" tabindex="0"
+                                                        class="page-link">Previous</a>
+                                                </li>
+                                            {% endif %}
+                                
+                                            {% for i in all_orders_page.paginator.page_range %}
+                                                <li class="paginate_button page-item {% if i == all_orders_page.number %}active{% endif %}">
+                                                    <a href="?page={{ i }}" aria-controls="example1" tabindex="0" class="page-link">{{ i }}</a>
+                                                </li>
+                                            {% endfor %}
+                                
+                                            {% if all_orders_page.has_next %}
+                                                <li class="paginate_button page-item" id="example1_next">
+                                                    <a href="?page={{ all_orders_page.next_page_number }}" aria-controls="example1" tabindex="0"
+                                                        class="page-link">Next</a>
+                                                </li>
+                                                <li class="paginate_button page-item" id="example1_next">
+                                                    <a href="?page={{ all_orders_page.paginator.num_pages }}" aria-controls="example1" tabindex="0"
+                                                        class="page-link">Last</a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+    
+                </div>
+    
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+<!-- Confirm Status Transition Modal -->
+<div class="modal fade" id="confirmStatusTransitionModal" tabindex="-1" role="dialog" aria-labelledby="confirmStatusTransitionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmStatusTransitionModalLabel">Confirm Status Transition</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to transition the order status?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmStatusTransition" class="btn btn-primary">Confirm</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Your specific template scripts -->
+<script>
+
+    $(document).ready(function () {
+            $('.status-transition-btn').on('click', function () {
+                var button = $(this);
+                var orderNumber = button.data('order-number');
+                var newStatus = button.data('new-status');
+                var modal = $('#confirmStatusTransitionModal');
+
+                // Update the href attribute with the correct URL
+                var url = '{% url 'orders:transition_order_status' 0 'new_status' %}'.replace('0', orderNumber).replace('new_status', newStatus);
+                modal.find('#confirmStatusTransition').attr('href', url);
+
+                // Debugging: Log the generated URL
+                console.log('Generated URL:', url);
+            });
+
+            // Ensure that the modal is hidden when closed
+            $('#confirmStatusTransitionModal').on('hidden.bs.modal', function () {
+                $(this).find('#confirmStatusTransition').attr('href', '#'); // Reset href when modal is closed
+            });
+        });
+
+
+
+
+$(document).ready(function () {
+    // Click event for order collapse/expand button
+    $('.btn-tool').on('click', function () {
+        const orderId = $(this).attr('data-target').replace('#collapse', '');
+        const iconElement = $(this).find('i');
+
+        // Toggle the icon class immediately
+        if (iconElement.hasClass('fa-plus')) {
+            iconElement.removeClass('fa-plus').addClass('fa-minus');
+        } else {
+            iconElement.removeClass('fa-minus').addClass('fa-plus');
+        }
+    });
+});
+
+$(document).ready(function () {
+    // Function to handle Load More functionality
+    const handleLoadMore = (containerSelector, loadMoreBtnSelector, itemCount) => {
+        const container = $(containerSelector);
+        const loadMoreBtn = $(loadMoreBtnSelector);
+
+        const showItems = (startIndex, endIndex) => {
+            const items = container.find('.card.card-primary.card-outline');
+            items.each((index, item) => {
+                if (index >= startIndex && index < endIndex) {
+                    $(item).show().addClass('fade-in');
+                } else {
+                    $(item).hide().removeClass('fade-in');
+                }
+            });
+        };
+
+        let visibleItemCount = 5; // Initial number of visible items
+        const totalItems = itemCount; // Total number of items
+
+        loadMoreBtn.on('click', function () {
+            if (visibleItemCount < totalItems) {
+                visibleItemCount += 5; // Increase visible items count by 5
+
+                // Show the next set of items
+                showItems(0, visibleItemCount);
+
+                // Update button text only when there are no more items to show
+                if (visibleItemCount >= totalItems) {
+                    loadMoreBtn.text('Load Less');
+                }
+            } else {
+                // Reset visible items count and show only the initial 5 items
+                visibleItemCount = 5;
+                showItems(0, visibleItemCount);
+
+                // Update button text
+                loadMoreBtn.text('Load More');
+            }
+        });
+
+        // Initially, show the first set of items
+        showItems(0, visibleItemCount);
+
+        // Hide the "Load More" button if all items are visible initially
+        if (visibleItemCount >= totalItems) {
+            loadMoreBtn.hide();
+        }
+    };
+
+    // Call the function for each card
+    handleLoadMore('.newOrdersContainer .card-body', '#newLoadMoreBtn', {{ new_orders|length }});
+    handleLoadMore('.todoOrdersContainer .card-body', '#todoLoadMoreBtn', {{ to_do_orders|length }});
+    handleLoadMore('.inprogressOrdersContainer .card-body', '#inprogressLoadMoreBtn', {{ in_progress_orders|length }});
+    handleLoadMore('.doneOrdersContainer .card-body', '#doneLoadMoreBtn', {{ done_orders|length }});
+    // Add more calls for other cards if needed
+});
+
+   
+// $(document).ready(function () {
+//         // Function to handle Load More functionality
+//         const handleLoadMore = (containerSelector, loadMoreBtnSelector, itemCount) => {
+//             const container = $(containerSelector);
+//             const loadMoreBtn = $(loadMoreBtnSelector);
+
+//             const showItems = (startIndex, endIndex) => {
+//                 const items = container.find('.card.card-primary.card-outline');
+//                 items.each((index, item) => {
+//                     if (index >= startIndex && index < endIndex) {
+//                         $(item).show().addClass('fade-in');
+//                     } else {
+//                         $(item).hide().removeClass('fade-in');
+//                     }
+//                 });
+//             };
+
+//             let visibleItemCount = 5; // Initial number of visible items
+//             const totalItems = itemCount; // Total number of items
+
+//             loadMoreBtn.on('click', function () {
+//                 if (visibleItemCount < totalItems) {
+//                     visibleItemCount += 5; // Increase visible items count by 5
+
+//                     // Show the next set of items
+//                     showItems(0, visibleItemCount);
+
+//                     // Update button text only when there are no more items to show
+//                     if (visibleItemCount >= totalItems) {
+//                         loadMoreBtn.text('Load Less');
+//                     }
+//                 } else {
+//                     // Reset visible items count and show only the initial 5 items
+//                     visibleItemCount = 5;
+//                     showItems(0, visibleItemCount);
+
+//                     // Update button text
+//                     loadMoreBtn.text('Load More');
+//                 }
+//             });
+
+//             // Initially, show the first set of items
+//             showItems(0, visibleItemCount);
+
+//             // Hide the "Load More" button if all items are visible initially
+//             if (visibleItemCount >= totalItems) {
+//                 loadMoreBtn.hide();
+//             }
+//         };
+
+//         // Call the function for each card
+//         handleLoadMore('.newOrdersContainer .card-body', '#newLoadMoreBtn', {{ new_orders|length }});
+//         handleLoadMore('.todoOrdersContainer .card-body', '#todoLoadMoreBtn', {{ to_do_orders|length }});
+//         handleLoadMore('.inprogressOrdersContainer .card-body', '#inprogressLoadMoreBtn', {{ in_progress_orders|length }});
+//         handleLoadMore('.doneOrdersContainer .card-body', '#doneLoadMoreBtn', {{ done_orders|length }});
+//         // Add more calls for other cards if needed
+//     });
+
+
+
+    $(document).ready(function () {
+    // Initialize DataTables without search feature for each table
+    $('#example').DataTable({
+        searching: false,
+        paging: false,
+        lengthChange: false,
+        info: false,
+        
+    });
+});
+
+$(document).ready(function () {
+    // Select the alert element
+    var myAlert = $("#myAlert");
+
+    // Set a timeout to automatically close the alert after 4 seconds
+    setTimeout(function () {
+        myAlert.slideUp(500, function(){
+            myAlert.alert('close');
+        });
+    }, 4000);
+});
+
+
+
+
+
+</script>
+{% endblock %}
