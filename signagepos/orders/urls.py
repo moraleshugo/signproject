@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.urls import path
 from django.conf.urls.static import static
-from .views import order_list, create_order, order_detail, edit_order, delete_order, transition_order_status, complete_order, upload_images, delete_image
+from .views import order_list, create_order, order_detail, edit_order, delete_order, transition_order_status, complete_order, upload_images, delete_image, mark_remainder_paid, invoice_receipt
 
 app_name = 'orders'
 
@@ -17,7 +17,9 @@ urlpatterns = [
     # path('start_order/<str:order_number>/', start_order, name='start_order'),
     # path('start_in_progress/<str:order_number>/', start_order, name='start_order'),
     path('transition_status/<str:order_number>/<str:new_status>/', transition_order_status, name='transition_order_status'),
+    path('<str:order_number>/mark_remainder_paid/', mark_remainder_paid, name='mark_remainder_paid'),
     #path('<str:order_number>/', start_progress, name='start_progress'),
+    path('invoice/<str:order_number>/', invoice_receipt, name='invoice_receipt'),
 
     # Add other URLs as needed
 ]

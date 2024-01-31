@@ -1,23 +1,52 @@
 from django.contrib import messages
+from django.db.models import Q
+
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import OrderForm, CustomerForm, OrderImagesForm
 from accounts.models import CustomUser
 from .models import Order, OrderImage
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
-
+from datetime import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.http import JsonResponse
 
+months_dict = {
+    1: 'January',
+    2: 'February',
+    3: 'March',
+    4: 'April',
+    5: 'May',
+    6: 'June',
+    7: 'July',
+    8: 'August',
+    9: 'September',
+    10: 'October',
+    11: 'November',
+    12: 'December',
+}
 
+@login_required
 def order_list(request):
-    all_orders = Order.objects.all()
+
+    all_orders = Order.objects.all().order_by('-created_on')
     new_orders = Order.objects.filter(process_status='new')
     to_do_orders = Order.objects.filter(process_status='to_do')
     in_progress_orders = Order.objects.filter(process_status='in_progress')
     done_orders = Order.objects.filter(process_status='done')
 
+     # Get all distinct months and years from the Order model
+    distinct_months = Order.objects.dates('created_on', 'month').distinct()
+    distinct_years = Order.objects.dates('created_on', 'year').distinct()
+
+    # Extract month and year values
+    month_choices = [(str(month.month), month.strftime('%B')) for month in distinct_months]
+    year_choices = [(str(year.year), str(year.year)) for year in distinct_years]
+    process_status_choices = Order.PROCESS_STATUS_CHOICES
+
+   
      # Filter orders for the current yearfor all Completed orders
     current_year = timezone.now().year
     done_orders_current_year = done_orders.filter(created_on__year=current_year)
@@ -25,21 +54,76 @@ def order_list(request):
     # Get a list of distinct years from the orders
     available_years = Order.objects.dates('created_on', 'year')
     
-    # Get the selected year from the request's GET parameters
-    selected_year = request.GET.get('selected_year')
+    # Get the values from the query parameters
+    month_param = request.GET.get('month', 'all')
+    print("selected Month", month_param )
+    year_param = request.GET.get('year', 'all')
+    print("selected Year", year_param)
+    process_status_param = request.GET.get('process_status', 'all')
+    print("selected Status", process_status_param)
     
-    # Get all orders or filter by the selected year
-    if selected_year and selected_year != 'all':
-        all_orders = Order.objects.filter(created_on__year=selected_year)
+   # Extract the month name from the parameter value
+    if month_param.startswith('month-'):
+        selected_month = month_param[len('month-'):]
     else:
-        all_orders = Order.objects.all()
+        selected_month = 'all'
 
+    # Extract the Year name from the parameter value
+    if year_param.startswith('year-'):
+        selected_year = year_param[len('year-'):]
+    else:
+        selected_year = 'all'
+
+    # Extract the Process Status from the parameter value
+    if process_status_param.startswith('status-'):
+        selected_status = process_status_param[len('status-'):]
+    else:
+        selected_status = 'all'
+
+    # Filter orders based on the selected values
+    filtered_orders = Order.objects.all()
+
+    if selected_month != 'all':
+        # Add filtering condition for month
+        filtered_orders = filtered_orders.filter(created_on__month=int(selected_month))
+
+    if selected_year != 'all':
+        # Add filtering condition for year
+        filtered_orders = filtered_orders.filter(created_on__year=int(selected_year))
+    
+
+    if selected_status != 'all':
+        # Add filtering condition for process status
+        filtered_orders = filtered_orders.filter(process_status=selected_status)
+
+    
+
+     # Get the search query from the request's GET parameters
+    search_query = request.GET.get('search_query')
+    print(search_query)
+
+    # Filter orders based on the search query
+    if search_query:
+        filtered_orders = all_orders.filter(Q(design_notes__icontains=search_query) |
+            Q(order_number__icontains=search_query) |
+            Q(color__icontains=search_query) |
+            Q(cut_type__icontains=search_query) |
+            Q(order_status__icontains=search_query) |
+            Q(process_status__icontains=search_query) |
+            Q(customer__first_name__icontains=search_query) |
+            Q(customer__last_name__icontains=search_query) |
+            Q(shipping_address__icontains=search_query) |
+            Q(city__icontains=search_query) |
+            Q(state__icontains=search_query) |
+            Q(zip_code__icontains=search_query) |
+            Q(tracking_number__icontains=search_query)
+            )
 
     # Set the number of items per page
     items_per_page = 10
 
     # Create a Paginator instance for all orders
-    paginator = Paginator(all_orders, items_per_page)
+    paginator = Paginator(filtered_orders, items_per_page)
 
     # Get the current page number from the request's GET parameters
     page = request.GET.get('page')
@@ -52,28 +136,30 @@ def order_list(request):
     except EmptyPage:
         all_orders_page = paginator.page(paginator.num_pages)
 
-    # Extract first and last letters of the first name for each order
-    # for status, order_list in orders.items():
-    #     for order in order_list:
-    #         first_name = order.customer.first_name
-    #         last_name = order.customer.last_name
-
-    #         # Add first and last name initials to the order as additional attributes
-    #         order.first_name_initial = first_name[0] if first_name else ''
-    #         order.last_name_initial = last_name[0] if last_name else ''
-
+    
     return render(request, 'orders/order_list.html', {
+        'months_dict': months_dict,
         
         'all_orders_page': all_orders_page,
         'new_orders': new_orders,
         'to_do_orders': to_do_orders,
         'in_progress_orders': in_progress_orders,
         'done_orders': done_orders_current_year,
+        
+        'month_choices': month_choices,
+        'year_choices': year_choices,
+        'process_status_choices': process_status_choices,
+        
+        'selected_month': selected_month,
         'selected_year': selected_year,
-        'available_years': available_years,})
+        'selected_status': selected_status,
+        #'selected_month_name': selected_month_name
+        
+        })
 
 
 
+@login_required
 def create_order(request):
     if request.method == 'POST':
         order_form = OrderForm(request.POST, request.FILES)
@@ -81,14 +167,31 @@ def create_order(request):
         order_images_form = OrderImagesForm(request.POST, request.FILES)  # Initialize order_images_form
 
         if order_form.is_valid() and customer_form.is_valid() and order_images_form.is_valid():
-            email = customer_form.cleaned_data['email']
-
+            email = customer_form.cleaned_data['email'].lower()  # Convert email to lowercase
+            first_name = customer_form.cleaned_data['first_name']
+            
+            last_name = customer_form.cleaned_data['last_name']
+            print(first_name, last_name)
             # Check if a user with the provided email already exists
             existing_user = CustomUser.objects.filter(email=email).first()
             
             if existing_user:
-
-                customer = existing_user
+                print('the user exists')
+                if request.user.is_admin:
+                    print('the user is admin')
+                # Admin is creating the order, create a new user
+                    customer = CustomUser.objects.create(
+                        first_name=first_name,
+                        last_name=last_name,
+                        username=email,
+                        email=email,
+                        phone_number=customer_form.cleaned_data['phone_number'],
+                    )
+                    print(customer)
+                    customer.save()
+                else:
+                    # Non-admin user is creating the order, assign the existing user
+                    customer = existing_user
                 
             else:
                 # Create a new customer
@@ -104,7 +207,7 @@ def create_order(request):
             # Create a new order and associate it with the customer
             order = order_form.save(commit=False)
             order.customer = customer  # Assign the existing or newly created customer to the order
-            order.order_status = 'New Order'
+            order.order_status = 'new_order'
             order.process_status = 'new'
             order.created_on = timezone.now()
             order.save()
@@ -135,7 +238,7 @@ def create_order(request):
 
 
 
-
+@login_required
 def edit_order(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
 
@@ -171,7 +274,14 @@ def edit_order(request, order_number):
             customer_instance.save()
             #order_images_instance.save()
 
+            # Show success message
+            messages.success(request, 'Order successfully edited.')
+
             return redirect('orders:order_detail', order_number=order_instance.order_number)
+        else:
+            # Show error message
+            messages.error(request, 'Error editing the order. Please check the form.')
+
 
     else:
         order_form = OrderForm(instance=order)
@@ -182,17 +292,18 @@ def edit_order(request, order_number):
 
 
     return render(request, 'orders/edit_order.html', {'order_form': order_form, 'customer_form': customer_form, 'order': order})
-    
+
+@login_required   
 def delete_order(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
+
+    # Delete the order regardless of the HTTP method
+    order.delete()
     
-    if request.method == 'POST':
-        order.delete()
-        return redirect('orders:order_list')  # Redirect to the order list page or wherever you need to go
-
-    return render(request, 'orders/confirm_delete.html', {'order': order})
+    return redirect('orders:order_list')
 
 
+@login_required
 def complete_order(request):
     if request.method == 'POST':
         order_number = request.POST.get('order_number')
@@ -217,7 +328,7 @@ def complete_order(request):
     
     
 
-
+@login_required
 def order_detail(request, order_number):
     user = request.user
 
@@ -259,7 +370,7 @@ def order_detail(request, order_number):
 
 #     return redirect('orders:order_list')
 
-
+@login_required
 def transition_order_status(request, order_number, new_status):
     order = get_object_or_404(Order, order_number=order_number)
 
@@ -284,8 +395,22 @@ def transition_order_status(request, order_number, new_status):
 
     return redirect('orders:order_list')
 
+@login_required
+def mark_remainder_paid(request, order_number):
+    order = get_object_or_404(Order, order_number=order_number)
 
+    # Set the deposit to the same amount as the price
+    order.deposit = order.price
 
+    # Perform any additional logic here if needed
+
+    # Save the changes
+    order.save()
+
+    # Redirect to the order detail page or any other desired page
+    return redirect('orders:order_list')
+
+@login_required
 def upload_mockup(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
     if request.method == 'POST':
@@ -308,6 +433,7 @@ def upload_mockup(request, order_number):
     messages.success(request, 'Oops Something went wrong!')
     return redirect('orders:order_detail', order_number=order.order_number)  # Create a template for this page if needed
 
+@login_required
 def upload_images(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
 
@@ -342,6 +468,7 @@ def upload_images(request, order_number):
     messages.error(request, 'Oops! Something went wrong.')
     return redirect('orders:edit_order', order_number=order.order_number)
 
+@login_required
 def delete_image(request, image_id):
     image = get_object_or_404(OrderImage, id=image_id)
     order_id = image.order.id  # Save order ID before deleting the image
@@ -349,3 +476,24 @@ def delete_image(request, image_id):
 
     # Send a JSON response indicating success
     return JsonResponse({'success': True, 'order_id': order_id})
+
+def invoice_receipt(request, order_number):
+    # Retrieve the order details based on the order_id
+    try:
+        order = Order.objects.get(order_number=order_number)
+         # Calculate total price
+        total_price = order.price * order.quantity
+
+        # Calculate total cost including other expenses
+        total_cost = total_price + order.other_expenses
+        
+    except Order.DoesNotExist:
+        # Handle the case where the order doesn't exist
+        # You can customize this based on your requirements
+        return render(request, 'orders/invoice_not_found.html')
+
+    # Pass the order object to the template
+    context = {'order': order, 
+        'total_price': total_price,
+        'total_cost': total_cost,}
+    return render(request, 'orders/invoice_receipt.html', context)

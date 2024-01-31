@@ -16,25 +16,26 @@ def order_image_path(instance, filename):
 
 class Order(models.Model):
     COLOR_CHOICES = [
-        ('Cool White', 'Cool White'),
-        ('Warm White', 'Warm White'),
-        ('Yellow', 'Yellow'),
-        ('Orange', 'Orange'),
-        ('Red', 'Red'),
-        ('Pink', 'Pink'),
-        ('Hot Pink', 'Hot Pink'),
-        ('Purple', 'Purple'),
-        ('Blue', 'Blue'),
-        ('Ice Blue', 'Ice Blue'),
-        ('Green', 'Green'),
+        ('cool_white', 'Cool White'),
+        ('warm-white', 'Warm White'),
+        ('yellow', 'Yellow'),
+        ('orange', 'Orange'),
+        ('red', 'Red'),
+        ('pink', 'Pink'),
+        ('hot_pink', 'Hot Pink'),
+        ('purple', 'Purple'),
+        ('blue', 'Blue'),
+        ('ice_blue', 'Ice Blue'),
+        ('green', 'Green'),
+        ('custom', 'Custom Colors'),
         # Add more colors as needed
     ]
 
     CUT_TYPE_CHOICES = [
-        ('Cut to Shape', 'Cut to Shape'),
-        ('Square/Rectangle', 'Square/Rectangle'),
-        ('Cut to Letter', 'Cut to Letter'),
-        ('Circular/Round', 'Circular/Round'),
+        ('cut_to_shape', 'Cut to Shape'),
+        ('square_rectangle', 'Square/Rectangle'),
+        ('cut_to_letter', 'Cut to Letter'),
+        ('circular_round', 'Circular/Round'),
         # Add more cut types as needed
     ]
     ORDER_STATUS_CHOICES = [
@@ -67,10 +68,10 @@ class Order(models.Model):
     cut_type = models.CharField(max_length=255, choices=CUT_TYPE_CHOICES)
     is_business = models.BooleanField(default=False, blank=True, null=True)
     order_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
-    shipping_address = models.CharField(max_length=255)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=50)
-    zip_code = models.CharField(max_length=20)
+    shipping_address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=50, blank=True, null=True)
+    zip_code = models.CharField(max_length=20, blank=True, null=True)
     quantity = models.PositiveIntegerField(default=1, blank=True, null=True)
     deposit = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -89,7 +90,9 @@ class Order(models.Model):
     power_supply_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     mounting_accessories_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     other_expenses = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
+    total_sign_profit = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_sign_material_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_sign_material_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
    
     created_on = models.DateTimeField(default=timezone.now)
     
@@ -97,8 +100,13 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         # Generate order number with the format Year_000001
         if not self.order_number:
+
             current_year = timezone.now().year
             last_order = Order.objects.filter(order_number__startswith=f"{current_year}_").order_by('-order_number').first()
+            # Recalculate and save the total_profit before saving the order
+            self.total_sign_material_cost = self.total_material_cost()
+            self.total_sign_material_amount = self.total_material_amount()
+            self.total_sign_profit = self.total_profit()
 
             if last_order:
                 order_number = str(int(last_order.order_number[-6:]) + 1).zfill(6)

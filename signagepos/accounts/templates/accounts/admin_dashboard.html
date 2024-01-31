@@ -6,96 +6,102 @@
 {% block content %}
 <!-- Content Wrapper. Contains page content -->
 
-
+{% csrf_token %}
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
         <!-- Info boxes -->
         <div class="row">
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box">
-              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">CPU Traffic</span>
-                <span class="info-box-number">
-                  10
-                  <small>%</small>
-                </span>
+          <div class="col-lg-3 col-6">
+        
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>{{ total_order_count }}</h3>
+                <p>ORDERS</p>
               </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box mb-3">
-              <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Likes</span>
-                <span class="info-box-number">41,410</span>
+              <div class="icon">
+                <i class="ion ion-bag"></i>
               </div>
-              <!-- /.info-box-content -->
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-            <!-- /.info-box -->
           </div>
-          <!-- /.col -->
-
-          <!-- fix for small devices only -->
-          <div class="clearfix hidden-md-up"></div>
-
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box mb-3">
-              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Sales</span>
-                <span class="info-box-number">760</span>
+        
+          <div class="col-lg-3 col-6">
+        
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>${{ total_sales }}</h3>
+                <p>TOTAL SALES</p>
               </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box mb-3">
-              <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">New Members</span>
-                <span class="info-box-number">2,000</span>
+              <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+                
               </div>
-              <!-- /.info-box-content -->
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-            <!-- /.info-box -->
           </div>
-          <!-- /.col -->
+        
+          <div class="col-lg-3 col-6">
+        
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>${{ total_cost }}</h3>
+                <p>TOTAL COST</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+                
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        
+          <div class="col-lg-3 col-6">
+        
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>${{ total_profit }}</h3>
+                <p>TOTAL PROFIT</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        
         </div>
+        
+        
         <!-- /.row -->
 
         <div class="row">
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h5 class="card-title">Monthly Recap Report</h5>
-
+                <h5 class="card-title">{% now "Y" %} Monthly Recap Report</h5>
+        
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse">
                     <i class="fas fa-minus"></i>
                   </button>
+                  <!-- Replace the existing dropdown with this -->
+                  <!-- Replace the existing dropdown with this -->
                   <div class="btn-group">
-                    <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
-                      <i class="fas fa-wrench"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right" role="menu">
-                      <a href="#" class="dropdown-item">Action</a>
-                      <a href="#" class="dropdown-item">Another action</a>
-                      <a href="#" class="dropdown-item">Something else here</a>
-                      <a class="dropdown-divider"></a>
-                      <a href="#" class="dropdown-item">Separated link</a>
-                    </div>
+                    <select id="selected_month" class="btn btn-tool">
+                      <option value="all" {% if selected_month == 'all' %}selected{% endif %}>All</option>
+        
+                      {% for month, month_name in months_dict.items %}
+        
+        
+                      <option value="{{ month }}" {% if selected_month == month %}selected{% endif %}>
+                        {{ month_name }}
+                      </option>
+                      {% endfor %}
+                    </select>
                   </div>
+        
+        
                   <button type="button" class="btn btn-tool" data-card-widget="remove">
                     <i class="fas fa-times"></i>
                   </button>
@@ -106,56 +112,225 @@
                 <div class="row">
                   <div class="col-md-8">
                     <p class="text-center">
-                      <strong>Sales: 1 Jan, 2014 - 30 Jul, 2014</strong>
+                      <strong>Sales: Jan1, {% now "Y" %} - Dec 30, {% now "Y" %}</strong>
                     </p>
-
+        
                     <div class="chart">
                       <!-- Sales Chart Canvas -->
-                      <canvas id="salesChart" height="180" style="height: 180px;"></canvas>
+                      <canvas id="salesProfitChart" height="200"></canvas>
                     </div>
                     <!-- /.chart-responsive -->
                   </div>
                   <!-- /.col -->
                   <div class="col-md-4">
-                    <p class="text-center">
-                      <strong>Goal Completion</strong>
-                    </p>
-
-                    <div class="progress-group">
-                      Add Products to Cart
-                      <span class="float-right"><b>160</b>/200</span>
-                      <div class="progress progress-sm">
-                        <div class="progress-bar bg-primary" style="width: 80%"></div>
+                    <div class="card bg-gradient-success">
+                      <div class="card-header border-0 ui-sortable-handle" style="cursor: move;">
+                        <h3 class="card-title">
+                          <i class="far fa-calendar-alt"></i>
+                          Calendar
+                        </h3>
+                  
+                        <div class="card-tools">
+                  
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
+                              <i class="fas fa-bars"></i>
+                            </button>
+                            <div class="dropdown-menu" role="menu">
+                              <a href="#" class="dropdown-item">Add new event</a>
+                              <a href="#" class="dropdown-item">Clear events</a>
+                              <div class="dropdown-divider"></div>
+                              <a href="#" class="dropdown-item">View calendar</a>
+                            </div>
+                          </div>
+                          <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                          </button>
+                          <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </div>
+                  
                       </div>
-                    </div>
-                    <!-- /.progress-group -->
-
-                    <div class="progress-group">
-                      Complete Purchase
-                      <span class="float-right"><b>310</b>/400</span>
-                      <div class="progress progress-sm">
-                        <div class="progress-bar bg-danger" style="width: 75%"></div>
+                  
+                      <div class="card-body pt-0">
+                  
+                        <div id="calendar" style="width: 100%">
+                          <div class="bootstrap-datetimepicker-widget usetwentyfour">
+                            <ul class="list-unstyled">
+                              <li class="show">
+                                <div class="datepicker">
+                                  <div class="datepicker-days" style="">
+                                    <table class="table table-sm">
+                                      <thead>
+                                        <tr>
+                                          <th class="prev" data-action="previous"><span class="fa fa-chevron-left"
+                                              title="Previous Month"></span></th>
+                                          <th class="picker-switch" data-action="pickerSwitch" colspan="5" title="Select Month">January
+                                            2024</th>
+                                          <th class="next" data-action="next"><span class="fa fa-chevron-right" title="Next Month"></span>
+                                          </th>
+                                        </tr>
+                                        <tr>
+                                          <th class="dow">Su</th>
+                                          <th class="dow">Mo</th>
+                                          <th class="dow">Tu</th>
+                                          <th class="dow">We</th>
+                                          <th class="dow">Th</th>
+                                          <th class="dow">Fr</th>
+                                          <th class="dow">Sa</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td data-action="selectDay" data-day="12/31/2023" class="day old weekend">31</td>
+                                          <td data-action="selectDay" data-day="01/01/2024" class="day">1</td>
+                                          <td data-action="selectDay" data-day="01/02/2024" class="day">2</td>
+                                          <td data-action="selectDay" data-day="01/03/2024" class="day">3</td>
+                                          <td data-action="selectDay" data-day="01/04/2024" class="day">4</td>
+                                          <td data-action="selectDay" data-day="01/05/2024" class="day">5</td>
+                                          <td data-action="selectDay" data-day="01/06/2024" class="day weekend">6</td>
+                                        </tr>
+                                        <tr>
+                                          <td data-action="selectDay" data-day="01/07/2024" class="day weekend">7</td>
+                                          <td data-action="selectDay" data-day="01/08/2024" class="day">8</td>
+                                          <td data-action="selectDay" data-day="01/09/2024" class="day">9</td>
+                                          <td data-action="selectDay" data-day="01/10/2024" class="day">10</td>
+                                          <td data-action="selectDay" data-day="01/11/2024" class="day">11</td>
+                                          <td data-action="selectDay" data-day="01/12/2024" class="day">12</td>
+                                          <td data-action="selectDay" data-day="01/13/2024" class="day weekend">13</td>
+                                        </tr>
+                                        <tr>
+                                          <td data-action="selectDay" data-day="01/14/2024" class="day weekend">14</td>
+                                          <td data-action="selectDay" data-day="01/15/2024" class="day">15</td>
+                                          <td data-action="selectDay" data-day="01/16/2024" class="day">16</td>
+                                          <td data-action="selectDay" data-day="01/17/2024" class="day">17</td>
+                                          <td data-action="selectDay" data-day="01/18/2024" class="day">18</td>
+                                          <td data-action="selectDay" data-day="01/19/2024" class="day">19</td>
+                                          <td data-action="selectDay" data-day="01/20/2024" class="day weekend">20</td>
+                                        </tr>
+                                        <tr>
+                                          <td data-action="selectDay" data-day="01/21/2024" class="day weekend">21</td>
+                                          <td data-action="selectDay" data-day="01/22/2024" class="day">22</td>
+                                          <td data-action="selectDay" data-day="01/23/2024" class="day">23</td>
+                                          <td data-action="selectDay" data-day="01/24/2024" class="day">24</td>
+                                          <td data-action="selectDay" data-day="01/25/2024" class="day">25</td>
+                                          <td data-action="selectDay" data-day="01/26/2024" class="day">26</td>
+                                          <td data-action="selectDay" data-day="01/27/2024" class="day weekend">27</td>
+                                        </tr>
+                                        <tr>
+                                          <td data-action="selectDay" data-day="01/28/2024" class="day active today weekend">28</td>
+                                          <td data-action="selectDay" data-day="01/29/2024" class="day">29</td>
+                                          <td data-action="selectDay" data-day="01/30/2024" class="day">30</td>
+                                          <td data-action="selectDay" data-day="01/31/2024" class="day">31</td>
+                                          <td data-action="selectDay" data-day="02/01/2024" class="day new">1</td>
+                                          <td data-action="selectDay" data-day="02/02/2024" class="day new">2</td>
+                                          <td data-action="selectDay" data-day="02/03/2024" class="day new weekend">3</td>
+                                        </tr>
+                                        <tr>
+                                          <td data-action="selectDay" data-day="02/04/2024" class="day new weekend">4</td>
+                                          <td data-action="selectDay" data-day="02/05/2024" class="day new">5</td>
+                                          <td data-action="selectDay" data-day="02/06/2024" class="day new">6</td>
+                                          <td data-action="selectDay" data-day="02/07/2024" class="day new">7</td>
+                                          <td data-action="selectDay" data-day="02/08/2024" class="day new">8</td>
+                                          <td data-action="selectDay" data-day="02/09/2024" class="day new">9</td>
+                                          <td data-action="selectDay" data-day="02/10/2024" class="day new weekend">10</td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  <div class="datepicker-months" style="display: none;">
+                                    <table class="table-condensed">
+                                      <thead>
+                                        <tr>
+                                          <th class="prev" data-action="previous"><span class="fa fa-chevron-left"
+                                              title="Previous Year"></span></th>
+                                          <th class="picker-switch" data-action="pickerSwitch" colspan="5" title="Select Year">2024</th>
+                                          <th class="next" data-action="next"><span class="fa fa-chevron-right" title="Next Year"></span>
+                                          </th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="7"><span data-action="selectMonth" class="month active">Jan</span><span
+                                              data-action="selectMonth" class="month">Feb</span><span data-action="selectMonth"
+                                              class="month">Mar</span><span data-action="selectMonth" class="month">Apr</span><span
+                                              data-action="selectMonth" class="month">May</span><span data-action="selectMonth"
+                                              class="month">Jun</span><span data-action="selectMonth" class="month">Jul</span><span
+                                              data-action="selectMonth" class="month">Aug</span><span data-action="selectMonth"
+                                              class="month">Sep</span><span data-action="selectMonth" class="month">Oct</span><span
+                                              data-action="selectMonth" class="month">Nov</span><span data-action="selectMonth"
+                                              class="month">Dec</span></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  <div class="datepicker-years" style="display: none;">
+                                    <table class="table-condensed">
+                                      <thead>
+                                        <tr>
+                                          <th class="prev" data-action="previous"><span class="fa fa-chevron-left"
+                                              title="Previous Decade"></span></th>
+                                          <th class="picker-switch" data-action="pickerSwitch" colspan="5" title="Select Decade">2020-2029
+                                          </th>
+                                          <th class="next" data-action="next"><span class="fa fa-chevron-right"
+                                              title="Next Decade"></span></th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="7"><span data-action="selectYear" class="year old">2019</span><span
+                                              data-action="selectYear" class="year">2020</span><span data-action="selectYear"
+                                              class="year">2021</span><span data-action="selectYear" class="year">2022</span><span
+                                              data-action="selectYear" class="year">2023</span><span data-action="selectYear"
+                                              class="year active">2024</span><span data-action="selectYear" class="year">2025</span><span
+                                              data-action="selectYear" class="year">2026</span><span data-action="selectYear"
+                                              class="year">2027</span><span data-action="selectYear" class="year">2028</span><span
+                                              data-action="selectYear" class="year">2029</span><span data-action="selectYear"
+                                              class="year old">2030</span></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  <div class="datepicker-decades" style="display: none;">
+                                    <table class="table-condensed">
+                                      <thead>
+                                        <tr>
+                                          <th class="prev" data-action="previous"><span class="fa fa-chevron-left"
+                                              title="Previous Century"></span></th>
+                                          <th class="picker-switch" data-action="pickerSwitch" colspan="5">2000-2090</th>
+                                          <th class="next" data-action="next"><span class="fa fa-chevron-right"
+                                              title="Next Century"></span></th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="7"><span data-action="selectDecade" class="decade old"
+                                              data-selection="2006">1990</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2006">2000</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2016">2010</span><span data-action="selectDecade" class="decade active"
+                                              data-selection="2026">2020</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2036">2030</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2046">2040</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2056">2050</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2066">2060</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2076">2070</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2086">2080</span><span data-action="selectDecade" class="decade"
+                                              data-selection="2096">2090</span><span data-action="selectDecade" class="decade old"
+                                              data-selection="2106">2100</span></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </li>
+                              <li class="picker-switch accordion-toggle"></li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
+                  
                     </div>
-
-                    <!-- /.progress-group -->
-                    <div class="progress-group">
-                      <span class="progress-text">Visit Premium Page</span>
-                      <span class="float-right"><b>480</b>/800</span>
-                      <div class="progress progress-sm">
-                        <div class="progress-bar bg-success" style="width: 60%"></div>
-                      </div>
-                    </div>
-
-                    <!-- /.progress-group -->
-                    <div class="progress-group">
-                      Send Inquiries
-                      <span class="float-right"><b>250</b>/500</span>
-                      <div class="progress progress-sm">
-                        <div class="progress-bar bg-warning" style="width: 50%"></div>
-                      </div>
-                    </div>
-                    <!-- /.progress-group -->
                   </div>
                   <!-- /.col -->
                 </div>
@@ -166,8 +341,8 @@
                 <div class="row">
                   <div class="col-sm-3 col-6">
                     <div class="description-block border-right">
-                      <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 17%</span>
-                      <h5 class="description-header">$35,210.43</h5>
+                      <span class="description-percentage text-success" id="percentage-revenue"></span>
+                      <h5 class="description-header" id="total-sales">${{ total_sales_year }}</h5>
                       <span class="description-text">TOTAL REVENUE</span>
                     </div>
                     <!-- /.description-block -->
@@ -175,8 +350,8 @@
                   <!-- /.col -->
                   <div class="col-sm-3 col-6">
                     <div class="description-block border-right">
-                      <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> 0%</span>
-                      <h5 class="description-header">$10,390.90</h5>
+                      <span class="description-percentage text-warning" id="percentage-cost"></span>
+                      <h5 class="description-header" id="total-cost">${{ total_cost_year }}</h5>
                       <span class="description-text">TOTAL COST</span>
                     </div>
                     <!-- /.description-block -->
@@ -184,8 +359,8 @@
                   <!-- /.col -->
                   <div class="col-sm-3 col-6">
                     <div class="description-block border-right">
-                      <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 20%</span>
-                      <h5 class="description-header">$24,813.53</h5>
+                      <span class="description-percentage text-success" id="percentage-profit"></span>
+                      <h5 class="description-header" id="total-profit">${{ total_profit_year }}</h5>
                       <span class="description-text">TOTAL PROFIT</span>
                     </div>
                     <!-- /.description-block -->
@@ -193,15 +368,16 @@
                   <!-- /.col -->
                   <div class="col-sm-3 col-6">
                     <div class="description-block">
-                      <span class="description-percentage text-danger"><i class="fas fa-caret-down"></i> 18%</span>
-                      <h5 class="description-header">1200</h5>
-                      <span class="description-text">GOAL COMPLETIONS</span>
+                      <span class="description-percentage text-danger" id="percentage-orders"></span>
+                      <h5 class="description-header" id="total-orders">{{ total_orders_current_year }}</h5>
+                      <span class="description-text">TOTAL ORDERS</span>
                     </div>
                     <!-- /.description-block -->
                   </div>
                 </div>
                 <!-- /.row -->
               </div>
+        
               <!-- /.card-footer -->
             </div>
             <!-- /.card -->
@@ -209,639 +385,514 @@
           <!-- /.col -->
         </div>
         <!-- /.row -->
-
-        <!-- Main row -->
+        
         <div class="row">
-          <!-- Left col -->
-          <div class="col-md-8">
-            <!-- MAP & BOX PANE -->
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">US-Visitors Report</h3>
+          <div class="col-md-12">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
 
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body p-0">
-                <div class="d-md-flex">
-                  <div class="p-1 flex-fill" style="overflow: hidden">
-                    <!-- Map will be created here -->
-                    <div id="world-map-markers" style="height: 325px; overflow: hidden">
-                      <div class="map"></div>
-                    </div>
-                  </div>
-                  <div class="card-pane-right bg-success pt-2 pb-2 pl-4 pr-4">
-                    <div class="description-block mb-4">
-                      <div class="sparkbar pad" data-color="#fff">90,70,90,70,75,80,70</div>
-                      <h5 class="description-header">8390</h5>
-                      <span class="description-text">Visits</span>
-                    </div>
-                    <!-- /.description-block -->
-                    <div class="description-block mb-4">
-                      <div class="sparkbar pad" data-color="#fff">90,50,90,70,61,83,63</div>
-                      <h5 class="description-header">30%</h5>
-                      <span class="description-text">Referrals</span>
-                    </div>
-                    <!-- /.description-block -->
-                    <div class="description-block">
-                      <div class="sparkbar pad" data-color="#fff">90,50,90,70,61,83,63</div>
-                      <h5 class="description-header">70%</h5>
-                      <span class="description-text">Organic</span>
-                    </div>
-                    <!-- /.description-block -->
-                  </div><!-- /.card-pane-right -->
-                </div><!-- /.d-md-flex -->
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-            <div class="row">
-              <div class="col-md-6">
-                <!-- DIRECT CHAT -->
-                <div class="card direct-chat direct-chat-warning">
-                  <div class="card-header">
-                    <h3 class="card-title">Direct Chat</h3>
+                  <!-- your_template.html -->
+                  <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    {% for month_name in month_names %}
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link {% if selected_month == forloop.counter %}active{% endif %}" id="{{ month_name }}-tab"
+                            href="?selected_year={{ selected_year }}&selected_month={{ forloop.counter }}" role="tab"
+                            aria-controls="{{ month_name|lower }}">{{ month_name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
 
-                    <div class="card-tools">
-                      <span title="3 New Messages" class="badge badge-warning">3</span>
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
+              
+                  <!-- Empty div to push the dropdown to the right -->
+                  <div class="flex-grow-1"></div>
+              
+                  <!-- Year filter dropdown on the right -->
+                  <div class="dropdown ml-2">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" id="yearFilterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          {% if selected_year %}
+                              {{ selected_year }}
+                          {% else %}
+                              Select Year
+                          {% endif %}
                       </button>
-                      <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                        <i class="fas fa-comments"></i>
-                      </button>
-                      <button type="button" class="btn btn-tool" data-card-widget="remove">
-                        <i class="fas fa-times"></i>
-                      </button>
-                    </div>
+                      <div class="dropdown-menu" aria-labelledby="yearFilterDropdown">
+                          <a class="dropdown-item" href="?selected_year=all">-- All Years--</a>
+                          {% for year in years %}
+                          <a class="dropdown-item" href="?selected_year={{ year }}&selected_month={{ selected_month }}">{{ year }}</a>
+                          {% endfor %}
+                      </div>
                   </div>
-                  <!-- /.card-header -->
+              
+              </div>
+              
+                  
                   <div class="card-body">
-                    <!-- Conversations are loaded here -->
-                    <div class="direct-chat-messages">
-                      <!-- Message. Default to the left -->
-                      <div class="direct-chat-msg">
-                        <div class="direct-chat-infos clearfix">
-                          <span class="direct-chat-name float-left">Alexander Pierce</span>
-                          <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="message user image">
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                          Is this template really for free? That's unbelievable!
-                        </div>
-                        <!-- /.direct-chat-text -->
-                      </div>
-                      <!-- /.direct-chat-msg -->
-
-                      <!-- Message to the right -->
-                      <div class="direct-chat-msg right">
-                        <div class="direct-chat-infos clearfix">
-                          <span class="direct-chat-name float-right">Sarah Bullock</span>
-                          <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="message user image">
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                          You better believe it!
-                        </div>
-                        <!-- /.direct-chat-text -->
-                      </div>
-                      <!-- /.direct-chat-msg -->
-
-                      <!-- Message. Default to the left -->
-                      <div class="direct-chat-msg">
-                        <div class="direct-chat-infos clearfix">
-                          <span class="direct-chat-name float-left">Alexander Pierce</span>
-                          <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="message user image">
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                          Working with AdminLTE on a great new app! Wanna join?
-                        </div>
-                        <!-- /.direct-chat-text -->
-                      </div>
-                      <!-- /.direct-chat-msg -->
-
-                      <!-- Message to the right -->
-                      <div class="direct-chat-msg right">
-                        <div class="direct-chat-infos clearfix">
-                          <span class="direct-chat-name float-right">Sarah Bullock</span>
-                          <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="message user image">
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                          I would love to.
-                        </div>
-                        <!-- /.direct-chat-text -->
-                      </div>
-                      <!-- /.direct-chat-msg -->
-
+                      <!-- Tab Content -->
+                      <div class="tab-content">
+                        {% for month_name in month_names %}
+                            <div class="tab-pane fade {% if selected_month == forloop.counter %}show active{% endif %}" id="{{ month }}">
+                                <!-- Display orders for the month -->
+                                
+                               
+                                <div class="card-body">
+                                  <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                      <div class="row">
+                                          <div class="col-sm-12 col-md-6">
+                                            <h3>{{ month_name }}
+                                              Orders</h3>
+                                          </div>
+                                          <div class="col-sm-12 col-md-6">
+                                              <form method="get" action="{% url 'customer:admin_dashboard' %}">
+                                                  <div id="example1_filter" class="dataTables_filter">
+                                                      <label>
+                                                          
+                                                          <input type="search" class="form-control form-control-sm" placeholder="Search" aria-controls="example1" name="search_query" value="{{ request.GET.search_query }}">
+                                                          <button type="submit" class="btn btn-sm btn-primary">Search</button>
+                                                      </label>
+                                                  </div>
+                                              </form>
+                                          </div>
+                                          
+                                      </div>
+                                      <div class="row">
+                                          <div class="col-sm-12 table-responsive">
+                                              <table id="example"
+                                              class="table table-head-fixed table-bordered table-striped dataTable dtr-inline p-0 table-hover text-nowrap "
+                                              aria-describedby="example1_info">
+                                              <thead>
+                                                  <tr>
+                                                      <th class="sorting sorting_asc" tabindex="0" aria-controls="example1"
+                                                          rowspan="1" colspan="1"
+                                                          aria-label="Image: activate to sort column ascending" style="" data-sortable="true">
+              
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Image: activate to sort column ascending" style="">
+                                                          Image
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Order Number: activate to sort column ascending"
+                                                          style="">
+                                                          Order Number
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Customer: activate to sort column ascending"
+                                                          style="">
+                                                          Customer
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Width x Height: activate to sort column ascending"
+                                                          style="">
+                                                          Width x Height
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1"
+                                                          aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                          Color
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Cut Type: activate to sort column ascending"
+                                                          style="">
+                                                          Cut Type
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1"
+                                                          aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                          Sign Notes
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Is Business: activate to sort column ascending"
+                                                          style="">
+                                                          Is Business
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Deposit: activate to sort column ascending"
+                                                          style="">
+                                                          Deposit
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Price: activate to sort column ascending" style="">
+                                                          Price
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Balance Due: activate to sort column ascending"
+                                                          style="">
+                                                          Balance Due
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Tracking Number: activate to sort column ascending"
+                                                          style="">
+                                                          Tracking Number
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                          style="">
+                                                          Actions
+                                                      </th>
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+                                                  {% if all_orders_page %}
+                                                  {% for order in all_orders_page  %}
+                                                  <tr class="odd custom-row-height">
+                                                      <td class="vertical-badge-cell">
+                                                          {% if order.process_status == 'new' %}
+                                                              <span class="badge bg-danger vertical-badge">{{ order.get_process_status_display }}</span>
+                                                          {% elif order.process_status == 'to_do' %}
+                                                              <span class="badge bg-warning vertical-badge">{{ order.get_process_status_display }}</span>
+                                                          {% elif order.process_status == 'in_progress' %}
+                                                              <span class="badge bg-info vertical-badge">{{ order.get_process_status_display }}</span>
+                                                          {% elif order.process_status == 'done' %}
+                                                              <span class="badge bg-secondary vertical-badge">{{ order.get_process_status_display }}</span>
+                                                          {% endif %}
+                                                      </td>
+                                                      
+                                                      
+              
+              
+              
+                                                      <td style="">
+                                                          {% if order.orderimage_set.exists %}
+                                                              {% with order_image=order.orderimage_set.first %}
+                                                                  <img src="{{ order_image.order_images.url }}" alt="Order Image" style="max-width: 100%; max-height: 100%;">
+                                                              {% endwith %}
+                                                          {% else %}
+                                                              <p>No image</p>
+                                                          {% endif %}
+                                                      </td>
+              
+                                                      <td style="">{{ order.order_number }}</td>
+                                                      <td style="">{{ order.customer.first_name }} {{ order.customer.last_name }}
+                                                      </td>
+                                                      <td style="">{{ order.width }} in x {{ order.height }} in</td>
+                                                      <td style="">{{ order.get_color_display }}</td>
+              
+                                                      <td style="">{{ order.get_cut_type_display }}</td>
+                                                      <td style="">{{ order.design_notes }}</td>
+                                                      <td style="">{{ order.is_business }}</td>
+                                                      <td style="">${{ order.deposit }}</td>
+                                                      <td style="">${{ order.price }}</td>
+                                                      <td style="">${{ order.get_balance_due }}</td>
+                                                      <td style="">{{ order.tracking_number }}</td>
+                                                      <td class="text-right py-0 align-middle">
+                                                          <div class="btn-group btn-group-sm">
+                                                              <a class="btn btn-info" href="{% url 'orders:order_detail' order_number=order.order_number %}">
+                                                                  <i class="fas fa-eye"></i>
+                                                              </a>
+                                                              <a href="{% url 'orders:edit_order' order_number=order.order_number %}" class="btn btn-info"><i class="fas fa-pen"></i></a>
+                                                              <a href="#" class="btn btn-danger delete-order-btn" data-toggle="modal" data-target="#deleteOrderModal" data-order-number="{{ order.order_number }}"><i class="fas fa-trash"></i></a>
+                                                              
+                                                              {% if order.deposit != order.price %}
+                                                              <a href="{% url 'orders:mark_remainder_paid' order_number=order.order_number %}" class="btn btn-success mark-remainder-paid-btn">
+                                                               Paid
+                                                              </a>
+                                                              {% endif %}
+                                  
+                                                          </div>
+                                                      </td>
+                                                  </tr>
+                                                  {% endfor %}
+                                                  {% else %}
+                                                  <tr>
+                                                  <tr class="custom-row-height">
+                                                      <td colspan="18">No orders available.</td>
+                                                  </tr>
+                                                  </tr>
+                                                  {% endif %}
+                                              </tbody>
+                                              <tfoot>
+                                                  <tr>
+                                                      <th class="sorting sorting_asc" tabindex="0" aria-controls="example1"
+                                                          rowspan="1" colspan="1"
+                                                          aria-label="Image: activate to sort column ascending" style="">
+              
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Image: activate to sort column ascending" style="">
+                                                          Image
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Order Number: activate to sort column ascending"
+                                                          style="">
+                                                          Order Number
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Customer: activate to sort column ascending"
+                                                          style="">
+                                                          Customer
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Width x Height: activate to sort column ascending"
+                                                          style="">
+                                                          Width x Height
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1"
+                                                          aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                          Color
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Cut Type: activate to sort column ascending"
+                                                          style="">
+                                                          Cut Type
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1"
+                                                          aria-label="Color/Design Notes: activate to sort column ascending" style="">
+                                                          Sign Notes
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Is Business: activate to sort column ascending"
+                                                          style="">
+                                                          Is Business
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Deposit: activate to sort column ascending"
+                                                          style="">
+                                                          Deposit
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Price: activate to sort column ascending" style="">
+                                                          Price
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Balance Due: activate to sort column ascending"
+                                                          style="">
+                                                          Balance Due
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Tracking Number: activate to sort column ascending"
+                                                          style="">
+                                                          Tracking Number
+                                                      </th>
+                                                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                          colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                          style="">
+                                                          Actions
+                                                      </th>
+                                                  </tr>
+                                              </tfoot>
+                                              <!-- Add footer if needed -->
+                                          </table>
+                                          </div>
+                                      </div>
+                                      <div class="row">
+                                          <!-- Display all_orders pagination links and information -->
+<div class="col-sm-12 col-md-5">
+  <div class="dataTables_info" role="status" aria-live="polite">
+      Showing {{ all_orders_page.start_index }} to {{ all_orders_page.end_index }} of {{ all_orders_page.paginator.count }} entries
+  </div>
+</div>
+                                          <div class="col-sm-12 col-md-7">
+                                              <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
+                                                  <ul class="pagination">
+                                          
+                                                      {% if all_orders_page.has_previous %}
+                                                          <li class="paginate_button page-item" id="example1_previous">
+                                                              <a href="?page=1" aria-controls="example1" tabindex="0" class="page-link">First</a>
+                                                          </li>
+                                                          <li class="paginate_button page-item" id="example1_previous">
+                                                              <a href="?page={{ all_orders_page.previous_page_number }}" aria-controls="example1" tabindex="0"
+                                                                  class="page-link">Previous</a>
+                                                          </li>
+                                                      {% endif %}
+                                          
+                                                      {% for i in all_orders_page.paginator.page_range %}
+                                                          <li class="paginate_button page-item {% if i == all_orders_page.number %}active{% endif %}">
+                                                              <a href="?page={{ i }}" aria-controls="example1" tabindex="0" class="page-link">{{ i }}</a>
+                                                          </li>
+                                                      {% endfor %}
+                                          
+                                                      {% if all_orders_page.has_next %}
+                                                          <li class="paginate_button page-item" id="example1_next">
+                                                              <a href="?page={{ all_orders_page.next_page_number }}" aria-controls="example1" tabindex="0"
+                                                                  class="page-link">Next</a>
+                                                          </li>
+                                                          <li class="paginate_button page-item" id="example1_next">
+                                                              <a href="?page={{ all_orders_page.paginator.num_pages }}" aria-controls="example1" tabindex="0"
+                                                                  class="page-link">Last</a>
+                                                          </li>
+                                                      {% endif %}
+                                                      
+                                                  </ul>
+                                              </div>
+                                          </div>
+                                          
+                                      </div>
+                                  </div>
+                              </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                    <!--/.direct-chat-messages-->
-
-                    <!-- Contacts are loaded here -->
-                    <div class="direct-chat-contacts">
-                      <ul class="contacts-list">
-                        <li>
-                          <a href="#">
-                            <img class="contacts-list-img" src="dist/img/user1-128x128.jpg" alt="User Avatar">
-
-                            <div class="contacts-list-info">
-                              <span class="contacts-list-name">
-                                Count Dracula
-                                <small class="contacts-list-date float-right">2/28/2015</small>
-                              </span>
-                              <span class="contacts-list-msg">How have you been? I was...</span>
-                            </div>
-                            <!-- /.contacts-list-info -->
-                          </a>
-                        </li>
-                        <!-- End Contact Item -->
-                        <li>
-                          <a href="#">
-                            <img class="contacts-list-img" src="dist/img/user7-128x128.jpg" alt="User Avatar">
-
-                            <div class="contacts-list-info">
-                              <span class="contacts-list-name">
-                                Sarah Doe
-                                <small class="contacts-list-date float-right">2/23/2015</small>
-                              </span>
-                              <span class="contacts-list-msg">I will be waiting for...</span>
-                            </div>
-                            <!-- /.contacts-list-info -->
-                          </a>
-                        </li>
-                        <!-- End Contact Item -->
-                        <li>
-                          <a href="#">
-                            <img class="contacts-list-img" src="dist/img/user3-128x128.jpg" alt="User Avatar">
-
-                            <div class="contacts-list-info">
-                              <span class="contacts-list-name">
-                                Nadia Jolie
-                                <small class="contacts-list-date float-right">2/20/2015</small>
-                              </span>
-                              <span class="contacts-list-msg">I'll call you back at...</span>
-                            </div>
-                            <!-- /.contacts-list-info -->
-                          </a>
-                        </li>
-                        <!-- End Contact Item -->
-                        <li>
-                          <a href="#">
-                            <img class="contacts-list-img" src="dist/img/user5-128x128.jpg" alt="User Avatar">
-
-                            <div class="contacts-list-info">
-                              <span class="contacts-list-name">
-                                Nora S. Vans
-                                <small class="contacts-list-date float-right">2/10/2015</small>
-                              </span>
-                              <span class="contacts-list-msg">Where is your new...</span>
-                            </div>
-                            <!-- /.contacts-list-info -->
-                          </a>
-                        </li>
-                        <!-- End Contact Item -->
-                        <li>
-                          <a href="#">
-                            <img class="contacts-list-img" src="dist/img/user6-128x128.jpg" alt="User Avatar">
-
-                            <div class="contacts-list-info">
-                              <span class="contacts-list-name">
-                                John K.
-                                <small class="contacts-list-date float-right">1/27/2015</small>
-                              </span>
-                              <span class="contacts-list-msg">Can I take a look at...</span>
-                            </div>
-                            <!-- /.contacts-list-info -->
-                          </a>
-                        </li>
-                        <!-- End Contact Item -->
-                        <li>
-                          <a href="#">
-                            <img class="contacts-list-img" src="dist/img/user8-128x128.jpg" alt="User Avatar">
-
-                            <div class="contacts-list-info">
-                              <span class="contacts-list-name">
-                                Kenneth M.
-                                <small class="contacts-list-date float-right">1/4/2015</small>
-                              </span>
-                              <span class="contacts-list-msg">Never mind I found...</span>
-                            </div>
-                            <!-- /.contacts-list-info -->
-                          </a>
-                        </li>
-                        <!-- End Contact Item -->
-                      </ul>
-                      <!-- /.contacts-list -->
-                    </div>
-                    <!-- /.direct-chat-pane -->
+                     
+                          
+              
                   </div>
-                  <!-- /.card-body -->
+                  
                   <div class="card-footer">
-                    <form action="#" method="post">
-                      <div class="input-group">
-                        <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-                        <span class="input-group-append">
-                          <button type="button" class="btn btn-warning">Send</button>
-                        </span>
+                    <div class="row">
+                      <div class="col-sm-3 col-6">
+                        <div class="description-block border-right">
+                          <span class="description-percentage text-success" id="percentage-revenue"></span>
+                          <h5 class="description-header" id="total-sales">${{ total_history_past_sales }}</h5>
+                          <span class="description-text">TOTAL REVENUE</span>
+                        </div>
+                        <!-- /.description-block -->
                       </div>
-                    </form>
-                  </div>
-                  <!-- /.card-footer-->
-                </div>
-                <!--/.direct-chat -->
-              </div>
-              <!-- /.col -->
-
-              <div class="col-md-6">
-                <!-- USERS LIST -->
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Latest Members</h3>
-
-                    <div class="card-tools">
-                      <span class="badge badge-danger">8 New Members</span>
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
-                      </button>
-                      <button type="button" class="btn btn-tool" data-card-widget="remove">
-                        <i class="fas fa-times"></i>
-                      </button>
+                      <!-- /.col -->
+                      <div class="col-sm-3 col-6">
+                        <div class="description-block border-right">
+                          <span class="description-percentage text-warning" id="percentage-cost"></span>
+                          <h5 class="description-header" id="total-cost">${{ total_history_past_cost }}</h5>
+                          <span class="description-text">TOTAL COST</span>
+                        </div>
+                        <!-- /.description-block -->
+                      </div>
+                      <!-- /.col -->
+                      <div class="col-sm-3 col-6">
+                        <div class="description-block border-right">
+                          <span class="description-percentage text-success" id="percentage-profit"></span>
+                          <h5 class="description-header" id="total-profit">${{ total_history_past_profit }}</h5>
+                          <span class="description-text">TOTAL PROFIT</span>
+                        </div>
+                        <!-- /.description-block -->
+                      </div>
+                      <!-- /.col -->
+                      <div class="col-sm-3 col-6">
+                        <div class="description-block">
+                          <span class="description-percentage text-danger" id="percentage-orders"></span>
+                          <h5 class="description-header" id="total-orders">{{ total_history_past_orders }}</h5>
+                          <span class="description-text">TOTAL ORDERS</span>
+                        </div>
+                        <!-- /.description-block -->
+                      </div>
                     </div>
+                    <!-- /.row -->
                   </div>
-                  <!-- /.card-header -->
-                  <div class="card-body p-0">
-                    <ul class="users-list clearfix">
-                      <li>
-                        <img src="dist/img/user1-128x128.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">Alexander Pierce</a>
-                        <span class="users-list-date">Today</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user8-128x128.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">Norman</a>
-                        <span class="users-list-date">Yesterday</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user7-128x128.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">Jane</a>
-                        <span class="users-list-date">12 Jan</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user6-128x128.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">John</a>
-                        <span class="users-list-date">12 Jan</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user2-160x160.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">Alexander</a>
-                        <span class="users-list-date">13 Jan</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user5-128x128.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">Sarah</a>
-                        <span class="users-list-date">14 Jan</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user4-128x128.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">Nora</a>
-                        <span class="users-list-date">15 Jan</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user3-128x128.jpg" alt="User Image">
-                        <a class="users-list-name" href="#">Nadia</a>
-                        <span class="users-list-date">15 Jan</span>
-                      </li>
-                    </ul>
-                    <!-- /.users-list -->
-                  </div>
-                  <!-- /.card-body -->
-                  <div class="card-footer text-center">
-                    <a href="javascript:">View All Users</a>
-                  </div>
+            
                   <!-- /.card-footer -->
-                </div>
-                <!--/.card -->
               </div>
-              <!-- /.col -->
-            </div>
-            <!-- /.row -->
-
-            <!-- TABLE: LATEST ORDERS -->
-            <div class="card">
-              <div class="card-header border-transparent">
-                <h3 class="card-title">Latest Orders</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table m-0">
-                    <thead>
-                    <tr>
-                      <th>Order ID</th>
-                      <th>Item</th>
-                      <th>Status</th>
-                      <th>Popularity</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                      <td>Call of Duty IV</td>
-                      <td><span class="badge badge-success">Shipped</span></td>
-                      <td>
-                        <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                      <td>Samsung Smart TV</td>
-                      <td><span class="badge badge-warning">Pending</span></td>
-                      <td>
-                        <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                      <td>iPhone 6 Plus</td>
-                      <td><span class="badge badge-danger">Delivered</span></td>
-                      <td>
-                        <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                      <td>Samsung Smart TV</td>
-                      <td><span class="badge badge-info">Processing</span></td>
-                      <td>
-                        <div class="sparkbar" data-color="#00c0ef" data-height="20">90,80,-90,70,-61,83,63</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                      <td>Samsung Smart TV</td>
-                      <td><span class="badge badge-warning">Pending</span></td>
-                      <td>
-                        <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                      <td>iPhone 6 Plus</td>
-                      <td><span class="badge badge-danger">Delivered</span></td>
-                      <td>
-                        <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                      <td>Call of Duty IV</td>
-                      <td><span class="badge badge-success">Shipped</span></td>
-                      <td>
-                        <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <!-- /.table-responsive -->
-              </div>
-              <!-- /.card-body -->
-              <div class="card-footer clearfix">
-                <a href="javascript:void(0)" class="btn btn-sm btn-info float-left">Place New Order</a>
-                <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
-              </div>
-              <!-- /.card-footer -->
-            </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
+      </div>
 
-          <div class="col-md-4">
-            <!-- Info Boxes Style 2 -->
-            <div class="info-box mb-3 bg-warning">
-              <span class="info-box-icon"><i class="fas fa-tag"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Inventory</span>
-                <span class="info-box-number">5,200</span>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-            <div class="info-box mb-3 bg-success">
-              <span class="info-box-icon"><i class="far fa-heart"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Mentions</span>
-                <span class="info-box-number">92,050</span>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-            <div class="info-box mb-3 bg-danger">
-              <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Downloads</span>
-                <span class="info-box-number">114,381</span>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-            <div class="info-box mb-3 bg-info">
-              <span class="info-box-icon"><i class="far fa-comment"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Direct Messages</span>
-                <span class="info-box-number">163,921</span>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Browser Usage</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-8">
-                    <div class="chart-responsive">
-                      <canvas id="pieChart" height="150"></canvas>
-                    </div>
-                    <!-- ./chart-responsive -->
-                  </div>
-                  <!-- /.col -->
-                  <div class="col-md-4">
-                    <ul class="chart-legend clearfix">
-                      <li><i class="far fa-circle text-danger"></i> Chrome</li>
-                      <li><i class="far fa-circle text-success"></i> IE</li>
-                      <li><i class="far fa-circle text-warning"></i> FireFox</li>
-                      <li><i class="far fa-circle text-info"></i> Safari</li>
-                      <li><i class="far fa-circle text-primary"></i> Opera</li>
-                      <li><i class="far fa-circle text-secondary"></i> Navigator</li>
-                    </ul>
-                  </div>
-                  <!-- /.col -->
-                </div>
-                <!-- /.row -->
-              </div>
-              <!-- /.card-body -->
-              <div class="card-footer p-0">
-                <ul class="nav nav-pills flex-column">
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      United States of America
-                      <span class="float-right text-danger">
-                        <i class="fas fa-arrow-down text-sm"></i>
-                        12%</span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      India
-                      <span class="float-right text-success">
-                        <i class="fas fa-arrow-up text-sm"></i> 4%
-                      </span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      China
-                      <span class="float-right text-warning">
-                        <i class="fas fa-arrow-left text-sm"></i> 0%
-                      </span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <!-- /.footer -->
-            </div>
-            <!-- /.card -->
-
-            <!-- PRODUCT LIST -->
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Recently Added Products</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body p-0">
-                <ul class="products-list product-list-in-card pl-2 pr-2">
-                  <li class="item">
-                    <div class="product-img">
-                      <img src="dist/img/default-150x150.png" alt="Product Image" class="img-size-50">
-                    </div>
-                    <div class="product-info">
-                      <a href="javascript:void(0)" class="product-title">Samsung TV
-                        <span class="badge badge-warning float-right">$1800</span></a>
-                      <span class="product-description">
-                        Samsung 32" 1080p 60Hz LED Smart HDTV.
-                      </span>
-                    </div>
-                  </li>
-                  <!-- /.item -->
-                  <li class="item">
-                    <div class="product-img">
-                      <img src="dist/img/default-150x150.png" alt="Product Image" class="img-size-50">
-                    </div>
-                    <div class="product-info">
-                      <a href="javascript:void(0)" class="product-title">Bicycle
-                        <span class="badge badge-info float-right">$700</span></a>
-                      <span class="product-description">
-                        26" Mongoose Dolomite Men's 7-speed, Navy Blue.
-                      </span>
-                    </div>
-                  </li>
-                  <!-- /.item -->
-                  <li class="item">
-                    <div class="product-img">
-                      <img src="dist/img/default-150x150.png" alt="Product Image" class="img-size-50">
-                    </div>
-                    <div class="product-info">
-                      <a href="javascript:void(0)" class="product-title">
-                        Xbox One <span class="badge badge-danger float-right">
-                        $350
-                      </span>
-                      </a>
-                      <span class="product-description">
-                        Xbox One Console Bundle with Halo Master Chief Collection.
-                      </span>
-                    </div>
-                  </li>
-                  <!-- /.item -->
-                  <li class="item">
-                    <div class="product-img">
-                      <img src="dist/img/default-150x150.png" alt="Product Image" class="img-size-50">
-                    </div>
-                    <div class="product-info">
-                      <a href="javascript:void(0)" class="product-title">PlayStation 4
-                        <span class="badge badge-success float-right">$399</span></a>
-                      <span class="product-description">
-                        PlayStation 4 500GB Console (PS4)
-                      </span>
-                    </div>
-                  </li>
-                  <!-- /.item -->
-                </ul>
-              </div>
-              <!-- /.card-body -->
-              <div class="card-footer text-center">
-                <a href="javascript:void(0)" class="uppercase">View All Products</a>
-              </div>
-              <!-- /.card-footer -->
-            </div>
-            <!-- /.card -->
-          </div>
-          <!-- /.col -->
-        </div>
-        <!-- /.row -->
+        
       </div><!--/. container-fluid -->
     </section>
     <!-- /.content -->
+    
+    <script>
+      
+$(document).ready(function () {
+  // Handle dropdown change event
+  $('#selected_month').change(function () {
+    // Fetch the selected month value
+    var selectedMonth = $(this).val();
+
+    // AJAX request to update the totals based on the selected month
+    $.ajax({
+      url: '{% url "customer:update_totals" %}',
+      type: 'POST',
+      data: {
+        selected_month: selectedMonth,
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+      },
+      success: function (data) {
+        // Update the HTML elements with new values
+        $('#total-sales').text("$"+ data.total_sales);
+        $('#total-cost').text("$"+ data.total_cost);
+        $('#total-profit').text("$"+ data.total_profit);
+        $('#total-orders').text(data.total_orders);
+
+        // Display percentage only if the selected month is not January
+        
+
+        // Calculate and display the percentage of loss or gain for each category
+        updatePercentage('percentage-revenue', data.previous_month_revenue, data.total_sales);
+        updatePercentage('percentage-cost', data.previous_month_total_cost, data.total_cost);
+        updatePercentage('percentage-profit', data.previous_month_total_profit, data.total_profit);
+        updatePercentage('percentage-orders', data.previous_month_total_orders, data.total_orders);
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  });
+
   
 
+
+
+
+
+});
+
+
+
+
+
+      document.addEventListener('DOMContentLoaded', function () {
+          // Sales and profit data
+          var salesData = {{ monthly_chart_year_sales_data|safe }};
+          var profitData = {{ monthly_chart_year_profit_data|safe }};
+          
+          // Chart data
+          var chartData = {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+              datasets: [
+                  {
+                      label: 'Total Sales',
+                      borderColor: 'rgba(255, 193, 7, 1)',
+                      backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                      data: salesData,
+                  },
+                  {
+                      label: 'Total Profit',
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      data: profitData,
+                  },
+              ],
+          };
+  
+          // Chart options
+          var chartOptions = {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  x: {
+                      type: 'category',
+                      labels: chartData.labels,
+                  },
+                  y: {
+                      beginAtZero: true,
+                  },
+              },
+          };
+  
+          // Get the chart canvas
+          var ctx = document.getElementById('salesProfitChart').getContext('2d');
+  
+          // Create the line chart
+          var salesProfitChart = new Chart(ctx, {
+              type: 'line',
+              data: chartData,
+              options: chartOptions,
+          });
+      });
+
+
+
+
+      // Check if selected_month is present in the URL
+    var selectedMonth = new URLSearchParams(window.location.search).get('selected_month');
+    
+    if (selectedMonth) {
+        // Scroll to the section with the selected_month
+        var targetSection = document.getElementById(selectedMonth + '-tab');
+        if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+  </script>
 {% endblock %}

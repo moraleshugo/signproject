@@ -63,16 +63,25 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
-                                    <div id="example_filter" class="dataTables_filter"><label>Search:<input type="search"
-                                                class="form-control form-control-sm" placeholder=""
-                                                aria-controls="example"></label></div>
+                                    <div id="example_filter" class="dataTables_filter">
+                                        <form method="get" action="{% url 'customer:customer_list' %}">
+                                            <label>Search:
+                                                <input type="search" class="form-control form-control-sm" placeholder=""
+                                                       aria-controls="example" name="search_query" value="{{ search_query }}">
+                                            </label>
+                                            <button type="submit" class="btn btn-sm btn-primary">Search</button>
+                                        </form>
+                                    </div>
                                 </div>
+                                
+                                
                             </div>
                             
                             
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive">
+                                       
                                     <table id="example" class="table table-head-fixed table-bordered table-striped dataTable dtr-inline p-0 table-hover text-nowrap "
                                         aria-describedby="example_info">
                                         <thead>
@@ -95,11 +104,21 @@
                                                     aria-label="Engine version: activate to sort column ascending"
                                                     style="">Phone Number
                                                 </th>
+                                                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
+                                                    colspan="1"
+                                                    aria-label="Engine version: activate to sort column ascending"
+                                                    style="">Is Admin
+                                                </th>
                                                     
                                                 <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
                                                     colspan="1"
                                                     aria-label="CSS grade: activate to sort column ascending" style="">
                                                     Orders
+                                                </th>
+                                                <th class="" tabindex="0" aria-controls="example" rowspan="1"
+                                                    colspan="1"
+                                                    style="">
+                                                    
                                                 </th>
                                             </tr>
                                         </thead>
@@ -111,6 +130,7 @@
                                                 <td style="">{{ customer.last_name }}</td>
                                                 <td style="">{{ customer.email}}</td>
                                                 <td style="">{{ customer.phone_number }}</td>
+                                                <td style="">{{ customer.is_admin }}</td>
                                                 <td style="">
                                                     
     
@@ -121,13 +141,18 @@
                                                 <td class="text-right py-0 align-middle">
                                                     <div class="btn-group btn-group-sm">
                                                     <a href="{% url 'customer:edit_customer' customer.id %}" class="btn btn-info"><i class="fas fa-pen"></i></a>
-                                                    <a href="{% url 'customer:delete_customer' customer.id %}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                                                    <a href="#" class="btn btn-danger delete-customer-btn" data-toggle="modal" data-target="#deleteCustomerModal" data-customer-id="{{ customer.id }}"><i class="fas fa-trash"></i></a>
+
+
+
                                                     </div>
                                                 </td>
                                             </tr>
                                             {% endfor %}
                                             {% else %}
-                                                <p>No customers available.</p>
+                                            <tr>
+                                                <td colspan="7">No customers available.</td>
+                                            </tr>
                                             {% endif %}
                                         </tbody>
                                         <tfoot>
@@ -138,18 +163,21 @@
                                                 <th rowspan="1" colspan="1" style="">Phone Number</th>
                                                 <th rowspan="1" colspan="1" style="">Address</th>
                                                 <th rowspan="1" colspan="1" style="">Orders</th>
+                                                <th rowspan="1" colspan="1" style=""></th>
                                             </tr>
                                         </tfoot>
                                     </table>
+                                    
                                 </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-12 col-md-5">
-                                    <div class="dataTables_info" id="example_info" role="status" aria-live="polite">
-                                        Showing 1 to 10 of 57 entries
-                                    </div>
+                                 <!-- Pagination information -->
+                            <div class="col-sm-12 col-md-5">
+                                <div class="dataTables_info" role="status" aria-live="polite">
+                                Showing {{ all_customers_page.start_index }} to {{ all_customers_page.end_index }} of {{ all_customers_page.paginator.count }} entries
                                 </div>
+                            </div>
                                 <div class="col-sm-12 col-md-7">
                                     <div class="dataTables_paginate paging_simple_numbers" id="example_paginate">
                                         <ul class="pagination">
@@ -199,21 +227,57 @@
     <!-- /.container-fluid -->
 </section>
 <!-- /.content -->
+<!-- Add this modal structure at the end of your HTML body -->
+<div class="modal fade" id="deleteCustomerModal" tabindex="-1" role="dialog" aria-labelledby="deleteCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCustomerModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this customer?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-danger" id="confirmDeleteCustomerBtn">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 {% endblock %}
 {% block scripts %}
-    {{ block.super }}
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    
     <script>
-        $(document).ready(function () {
-            // Initialize DataTables without search feature for the 'example' table
-            $('#example').DataTable({
-                searching: false,
-                paging: false,
-                lengthChange: false,
-                info: false,
-            });
-        });
+     
+     $(document).ready(function () {
+    $('.delete-customer-btn').on('click', function () {
+        var button = $(this);
+        var customerId = button.data('customer-id');
+        var modal = $('#deleteCustomerModal');
+
+        // Update the href attribute with the correct URL
+        var url = '{% url 'customer:delete_customer' customer_id=0 %}'.replace('0', customerId);
+        modal.find('.btn-danger').attr('href', url);
+
+        // Debugging: Log the generated URL
+        console.log('Generated URL:', url);
+    });
+
+    // Ensure that the modal is hidden when closed
+    $('#deleteCustomerModal').on('hidden.bs.modal', function () {
+        // Reset href when modal is closed
+        $(this).find('.btn-danger').attr('href', '#');
+    });
+});
+
+
+      
+
     </script>
 {% endblock %}

@@ -2,6 +2,7 @@ from django import forms
 from .models import Order, OrderImage
 from accounts.models import CustomUser
 
+
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -12,17 +13,14 @@ class OrderForm(forms.ModelForm):
             'quantity', 'deposit', 'price', 'order_status', 'tracking_number',
             'company_notes', 'acrylic_cost', 'silicone_cost',
             'silicone_amount_meters', 'led_light_cost', 'led_light_meters',
-            'power_supply_cost', 'mounting_accessories_cost', 'created_on', 'warranty_start_date', 'warranty_duration', 'other_expenses'
+            'power_supply_cost', 'mounting_accessories_cost', 'warranty_start_date', 'warranty_duration', 'other_expenses'
         ]
-         
-       
 
-        # Customize form fields using widgets or add additional fields if needed
         widgets = {
         'width': forms.NumberInput(attrs={'class': 'form-control'}),
         'height': forms.NumberInput(attrs={'class': 'form-control'}),
         'color': forms.Select(attrs={'class': 'form-control'}),
-        'design_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        'design_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Describe the sign in details, text or logo design idea and colors.'}),
         'cut_type': forms.Select(attrs={'class': 'form-control'}),
         'is_business': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         'order_number': forms.TextInput(attrs={'class': 'form-control'}),
@@ -52,10 +50,19 @@ class OrderForm(forms.ModelForm):
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            self.fields['image'].required = False  # Make the image field optional
+            self.fields['image'].required = False 
             self.fields['is_business'].required = False
             self.fields['warranty_start_date'].required = False
             self.fields['warranty_duration'].required = False
+            self.fields['shipping_address'].required = False
+            self.fields['city'].required = False
+            self.fields['state'].required = False
+            self.fields['state'].required = False
+
+            # Set default values for color and cut_type
+            self.fields['color'].initial = 'cool_white' 
+            self.fields['cut_type'].initial = 'cut_to_shape'  
+
             
 
         def clean_warranty_duration(self):
@@ -66,7 +73,7 @@ class OrderForm(forms.ModelForm):
             return warranty_duration
 
 class CustomerForm(forms.ModelForm):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), required=False)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), required=True)
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name' , 'phone_number']

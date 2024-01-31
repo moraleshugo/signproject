@@ -323,7 +323,9 @@ a.forum-item-title:hover {
                                 
                                 
                                 <div>
-                                    
+                                    <a href="{% url 'orders:invoice_receipt' order.order_number %}" class="btn btn-success">
+                                        <i class="bi bi-file-earmark-text"></i> Generate Receipt
+                                    </a>
                                     <a href="{% url 'orders:edit_order' order.order_number %}" class="btn btn-primary">
                                         <i class="fas fa-pen"></i>
                                     </a>
@@ -408,7 +410,7 @@ a.forum-item-title:hover {
                                             <i class="fas fa-check fa-md checkmark" style="color: white;"></i>
                                         {% endif %}
                                     </div>
-                                    <p class="step-label" {% if order.process_status == 'to_do' or order.process_status == 'in_progress' or order.process_status == 'done'  %}style="color: blue"{% endif %}>Completed</p>
+                                    <p class="step-label" {% if order.process_status == 'done'  %}style="color: blue"{% endif %}>Completed</p>
                                 </div>
                             </div>
                         </div>
@@ -572,14 +574,7 @@ a.forum-item-title:hover {
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <p class="mb-0">Phone</p>
-                            </div>
-                            <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{ order.customer.phone_number }}</p>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
                 <div class="row">
@@ -612,7 +607,7 @@ a.forum-item-title:hover {
                                         <p class="mb-0">Color</p>
                                     </div>
                                     <div class="col-sm-9">
-                                        <p class="text-muted mb-0">{{ order.color }}</p>
+                                        <p class="text-muted mb-0">{{ order.get_color_display }}</p>
                                     </div>
                                 </div>
 
@@ -623,7 +618,7 @@ a.forum-item-title:hover {
                                     </div>
                                     <div class="col-sm-9">
                                         <p class="text-muted mb-0">
-                                            {{order.cut_type}}
+                                            {{order.get_cut_type_display}}
                                         </p>
                                     </div>
                                 </div>
