@@ -83,11 +83,12 @@ def admin_dashboard(request):
     month_names = [datetime.strptime(str(month), "%m").strftime("%B") for month in months]
 
     # Get the minimum and maximum order years
-    min_year = Order.objects.aggregate(Min('created_on'))['created_on__min'].year
-    max_year = Order.objects.aggregate(Max('created_on'))['created_on__max'].year
 
-    # Create a list of years from min_year to max_year
-    years = list(range(min_year, max_year + 1))
+    # min_year = Order.objects.aggregate(Min('created_on'))['created_on__min'].year
+    # max_year = Order.objects.aggregate(Max('created_on'))['created_on__max'].year
+
+    # # Create a list of years from min_year to max_year
+    # years = list(range(min_year, max_year + 1))
 
    
 
@@ -291,7 +292,7 @@ def admin_dashboard(request):
         'total_profit_year': total_profit_year,
         'total_cost_year': total_cost_year,
         'total_sales_year': total_sales_year,
-        'years': years,
+        # 'years': years,
         'selected_month': selected_month,
         'selected_year': selected_year,
         'all_orders': all_orders,
